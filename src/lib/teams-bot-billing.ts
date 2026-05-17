@@ -92,11 +92,16 @@ export class BedasoftBillingTeamsBot extends ActivityHandler {
 
         // Parsear Acción
         let friendlyText = aiResponse;
+        let actionData: any = { intent: 'NONE', data: {} };
         const actionMatch = aiResponse.match(/\[ACTION\]([\s\S]*?)\[\/ACTION\]/);
         
         if (actionMatch) {
           friendlyText = aiResponse.replace(/\[ACTION\][\s\S]*?\[\/ACTION\]/, '').trim();
-          const actionData = JSON.parse(actionMatch[1].trim());
+          try {
+            actionData = JSON.parse(actionMatch[1].trim());
+          } catch (jsonErr) {
+            console.error('[BillingBot] Error parseando ACTION JSON:', jsonErr);
+          }
 
           // EJECUTAR ACCIONES
           if (actionData.intent === 'CREATE_CLIENT') {
