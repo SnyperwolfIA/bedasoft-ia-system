@@ -6,11 +6,10 @@ import {
 } from 'botbuilder';
 import { BedasoftRRHHTeamsBot } from '@/lib/teams-bot-rrhh';
 
-// Credenciales del Bot de Recursos Humanos
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
-    MicrosoftAppId: process.env.RRHH_BOT_APP_ID || 'd03d9925-a004-432d-942a-38d69e61333b',
+    MicrosoftAppId: process.env.RRHH_BOT_APP_ID || process.env.MicrosoftAppId || 'd03d9925-a004-432d-942a-38d69e61333b',
     MicrosoftAppType: 'MultiTenant',
-    MicrosoftAppPassword: process.env.RRHH_BOT_CLIENT_SECRET || ''
+    MicrosoftAppPassword: process.env.RRHH_BOT_CLIENT_SECRET || process.env.MicrosoftAppPassword || ''
 });
 
 const botFrameworkAuthentication = createBotFrameworkAuthenticationFromConfiguration(null, credentialsFactory);

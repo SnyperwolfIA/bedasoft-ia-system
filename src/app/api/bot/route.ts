@@ -6,11 +6,10 @@ import {
 } from 'botbuilder';
 import { BedasoftBillingTeamsBot } from '@/lib/teams-bot-billing';
 
-// Credenciales del Bot de Facturación (Puerto por defecto)
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
-    MicrosoftAppId: process.env.BILLING_BOT_APP_ID || '23305851-2a0a-4431-8a97-ec8f3dde65bf',
+    MicrosoftAppId: process.env.BILLING_BOT_APP_ID || process.env.MicrosoftAppId || '23305851-2a0a-4431-8a97-ec8f3dde65bf',
     MicrosoftAppType: 'MultiTenant',
-    MicrosoftAppPassword: process.env.BILLING_BOT_CLIENT_SECRET || process.env.MICROSOFT_CLIENT_SECRET || ''
+    MicrosoftAppPassword: process.env.BILLING_BOT_CLIENT_SECRET || process.env.MicrosoftAppPassword || process.env.MICROSOFT_CLIENT_SECRET || ''
 });
 
 const botFrameworkAuthentication = createBotFrameworkAuthenticationFromConfiguration(null, credentialsFactory);
