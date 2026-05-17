@@ -167,7 +167,8 @@ export class BedasoftBillingTeamsBot extends ActivityHandler {
                    FechaEmision: new Date().toISOString(),
                    Estado: 'Emitida',
                    NumPedido: numPedido || 'Pedido Teams',
-                   SharePointUrl: fileSpUrl
+                   SharePointUrl: fileSpUrl,
+                   Cliente: client.name
                  });
                  if (spItem && spItem.webUrl) {
                    listSpUrl = spItem.webUrl;

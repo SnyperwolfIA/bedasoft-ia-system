@@ -32,6 +32,17 @@ export async function GET(req: NextRequest) {
           console.warn('[Invoices API] No se pudo cruzar con la lista de SharePoint:', listErr);
         }
 
+        // Cargamos todas las facturas locales para enriquecer el cliente si no está en SharePoint
+        let localInvoices: any[] = [];
+        try {
+          localInvoices = await prisma.invoice.findMany({
+            where: { userId: user.id },
+            include: { client: true }
+          });
+        } catch (dbErr) {
+          console.warn('[Invoices API] No se pudo cargar localInvoices para enriquecimiento:', dbErr);
+        }
+
         const mappedInvoices = folderFiles.map((file: any) => {
           // Extraemos el número de factura quitando la extensión (.pdf, .json, etc.)
           const numFactura = file.name.replace(/\.[^/.]+$/, "");
@@ -44,6 +55,14 @@ export async function GET(req: NextRequest) {
             return cleanNumFactura.includes(title) || title.includes(cleanNumFactura);
           });
           
+          // Intentamos buscar en local para ver si tenemos el cliente
+          const localInv = localInvoices.find(li => {
+            const liNum = li.numFactura.toLowerCase().trim();
+            return cleanNumFactura.includes(liNum) || liNum.includes(cleanNumFactura);
+          });
+          
+          const clientName = matchedItem?.fields?.Cliente || localInv?.client?.name || 'Venta Directa';
+          
           return {
             id: file.id,
             numFactura: numFactura,
@@ -53,9 +72,7 @@ export async function GET(req: NextRequest) {
             status: matchedItem?.fields?.Estado?.toLowerCase() || 'emitida',
             numPedido: matchedItem?.fields?.NumPedido || 'Archivo PDF',
             sharepointUrl: file.webUrl || matchedItem?.fields?.SharePointUrl || '',
-            client: matchedItem?.fields?.ClienteLookupId || matchedItem?.fields?.Cliente 
-              ? { name: matchedItem.fields.Cliente || 'Cliente Asociado' } 
-              : { name: 'Venta Directa' },
+            client: { name: clientName },
             lines: []
           };
         });
@@ -137,7 +154,8 @@ export async function POST(req: NextRequest) {
         Moneda: 'EUR',
         FechaEmision: new Date().toISOString(),
         Estado: 'Emitida',
-        NumPedido: lines?.[0]?.description || 'Factura Bedasoft IA'
+        NumPedido: lines?.[0]?.description || 'Factura Bedasoft IA',
+        Cliente: client?.name || clientName || 'Venta Directa'
       });
       if (spItem && spItem.webUrl) {
         spUrl = spItem.webUrl;
