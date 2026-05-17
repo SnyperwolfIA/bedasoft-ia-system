@@ -4,24 +4,24 @@ import {
   ConfigurationServiceClientCredentialFactory, 
   createBotFrameworkAuthenticationFromConfiguration 
 } from 'botbuilder';
-import { BedasoftBillingTeamsBot } from '@/lib/teams-bot-billing';
+import { BedasoftRRHHTeamsBot } from '@/lib/teams-bot-rrhh';
 
-// Credenciales del Bot de Facturación (Puerto por defecto)
+// Credenciales del Bot de Recursos Humanos
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
-    MicrosoftAppId: process.env.BILLING_BOT_APP_ID || '23305851-2a0a-4431-8a97-ec8f3dde65bf',
+    MicrosoftAppId: process.env.RRHH_BOT_APP_ID || 'd03d9925-a004-432d-942a-38d69e61333b',
     MicrosoftAppType: 'MultiTenant',
-    MicrosoftAppPassword: process.env.BILLING_BOT_CLIENT_SECRET || process.env.MICROSOFT_CLIENT_SECRET || ''
+    MicrosoftAppPassword: process.env.RRHH_BOT_CLIENT_SECRET || ''
 });
 
 const botFrameworkAuthentication = createBotFrameworkAuthenticationFromConfiguration(null, credentialsFactory);
 const adapter = new CloudAdapter(botFrameworkAuthentication);
 
 adapter.onTurnError = async (context, error) => {
-    console.error(`[billing-bot-error] ${error}`);
-    await context.sendActivity('El Asistente de Facturación ha detectado una anomalía de conexión. Reintentando...');
+    console.error(`[rrhh-bot-error] ${error}`);
+    await context.sendActivity('El Asistente de Recursos Humanos ha detectado una anomalía de conexión. Reintentando...');
 };
 
-const bot = new BedasoftBillingTeamsBot();
+const bot = new BedasoftRRHHTeamsBot();
 
 export async function POST(req: NextRequest) {
     try {
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         return new NextResponse(null, { status: 200 });
 
     } catch (err: any) {
-        console.error("[Billing Bot Route Error]", err);
+        console.error("[RRHH Bot Route Error]", err);
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

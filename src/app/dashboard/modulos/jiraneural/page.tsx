@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
-  Briefcase, Send, Cpu, Loader2, Bot, User, Sparkles, Settings, Globe, Mail, Key, ShieldCheck
+  Briefcase, Send, Cpu, Loader2, Bot, User, Sparkles, Settings, Globe, Mail, Key, ShieldCheck, MessagesSquare
 } from 'lucide-react';
 
 export default function JiraNeuralPage() {
@@ -264,6 +264,24 @@ export default function JiraNeuralPage() {
                   </div>
                 </div>
               )}
+
+              {/* Teams Integration Card */}
+              <div className="mt-6 p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col items-center gap-3">
+                <span className="tech-font text-[8px] text-white/30 uppercase tracking-[0.3em]">Enlace Neural con Teams</span>
+                <a 
+                  href="https://teams.microsoft.com/l/chat/0/0?users=28:aa1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d&topicName=JiraNeural%20Sync&message=Hola%20Agente%20Jira.%20Deseo%20gestionar%20mis%20proyectos." 
+                  target="_blank" 
+                  className="w-full max-w-md py-3 bg-[#4b53bc] hover:bg-[#5a64d1] text-[10px] tech-font rounded-xl flex items-center justify-center gap-3 transition-all border border-white/20 shadow-[0_0_20px_rgba(75,83,188,0.2)] group"
+                >
+                  <div className="relative">
+                    <MessagesSquare size={16} className="group-hover:scale-110 transition-transform" />
+                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-[#4b53bc] animate-pulse" />
+                  </div>
+                  <span className="font-bold tracking-widest uppercase text-white">Abrir Agente Jira en Teams</span>
+                </a>
+                <p className="text-[7px] tech-font text-white/20 uppercase tracking-widest">Conversación persistente y segura</p>
+              </div>
+
               <div ref={chatEndRef} />
             </div>
 
