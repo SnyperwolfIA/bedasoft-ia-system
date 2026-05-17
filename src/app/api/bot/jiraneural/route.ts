@@ -8,8 +8,9 @@ import { BedasoftJiraNeuralTeamsBot } from '@/lib/teams-bot-jiraneural';
 
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
     MicrosoftAppId: process.env.JIRANEURAL_BOT_APP_ID || '20cf5a63-31ab-417e-a124-4c3b02bbdf66',
-    MicrosoftAppType: 'MultiTenant',
-    MicrosoftAppPassword: process.env.JIRANEURAL_BOT_CLIENT_SECRET || process.env.MicrosoftAppPassword || ''
+    MicrosoftAppType: process.env.JIRANEURAL_BOT_APP_TYPE || process.env.MicrosoftAppType || 'MultiTenant',
+    MicrosoftAppPassword: process.env.JIRANEURAL_BOT_CLIENT_SECRET || process.env.MicrosoftAppPassword || '',
+    MicrosoftAppTenantId: process.env.JIRANEURAL_BOT_TENANT_ID || process.env.MicrosoftAppTenantId || '80324945-885b-4f3e-99db-a1057b53db70'
 });
 
 const botFrameworkAuthentication = createBotFrameworkAuthenticationFromConfiguration(null, credentialsFactory);

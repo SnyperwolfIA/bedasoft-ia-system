@@ -1,7 +1,8 @@
 import { 
   ActivityHandler, 
   MessageFactory, 
-  TurnContext 
+  TurnContext,
+  TeamsInfo
 } from 'botbuilder';
 import prisma from './prisma';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -36,6 +37,17 @@ export class BedasoftTeamsBot extends ActivityHandler {
       const text = context.activity.text;
       let userEmail = context.activity.from.properties?.email || (context.activity.from as any).email;
       
+      // Si el email es undefined y estamos en Teams, intentamos resolver el miembro
+      if (!userEmail && context.activity.channelId === 'msteams') {
+        try {
+          const member = await TeamsInfo.getMember(context, context.activity.from.id);
+          userEmail = member.userPrincipalName || member.email;
+          console.log(`[TeamsBot] [TeamsInfo] Resolviendo email desde miembro de Teams: ${userEmail}`);
+        } catch (e) {
+          console.error(`[TeamsBot] [TeamsInfo] Error al obtener miembro de Teams:`, e);
+        }
+      }
+
       // Si estamos probando en el Web Chat de Azure o en el Emulador, simulamos el primer usuario de la base de datos
       // para permitirte probar la IA y la facturación neural directamente sin estar aún dentro de Teams.
       if (!userEmail && (context.activity.channelId === 'webchat' || context.activity.channelId === 'emulator')) {

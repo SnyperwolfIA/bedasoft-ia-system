@@ -8,8 +8,9 @@ import { BedasoftBillingTeamsBot } from '@/lib/teams-bot-billing';
 
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
     MicrosoftAppId: process.env.BILLING_BOT_APP_ID || '23305851-2a0a-4431-8a97-ec8f3dde65bf',
-    MicrosoftAppType: 'MultiTenant',
-    MicrosoftAppPassword: process.env.BILLING_BOT_CLIENT_SECRET || process.env.MicrosoftAppPassword || process.env.MICROSOFT_CLIENT_SECRET || ''
+    MicrosoftAppType: process.env.BILLING_BOT_APP_TYPE || process.env.MicrosoftAppType || 'MultiTenant',
+    MicrosoftAppPassword: process.env.BILLING_BOT_CLIENT_SECRET || process.env.MicrosoftAppPassword || process.env.MICROSOFT_CLIENT_SECRET || '',
+    MicrosoftAppTenantId: process.env.BILLING_BOT_TENANT_ID || process.env.MicrosoftAppTenantId || '80324945-885b-4f3e-99db-a1057b53db70'
 });
 
 const botFrameworkAuthentication = createBotFrameworkAuthenticationFromConfiguration(null, credentialsFactory);

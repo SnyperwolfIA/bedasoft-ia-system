@@ -8,8 +8,9 @@ import { BedasoftRRHHTeamsBot } from '@/lib/teams-bot-rrhh';
 
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
     MicrosoftAppId: process.env.RRHH_BOT_APP_ID || 'd03d9925-a004-432d-942a-38d69e61333b',
-    MicrosoftAppType: 'MultiTenant',
-    MicrosoftAppPassword: process.env.RRHH_BOT_CLIENT_SECRET || process.env.MicrosoftAppPassword || ''
+    MicrosoftAppType: process.env.RRHH_BOT_APP_TYPE || process.env.MicrosoftAppType || 'MultiTenant',
+    MicrosoftAppPassword: process.env.RRHH_BOT_CLIENT_SECRET || process.env.MicrosoftAppPassword || '',
+    MicrosoftAppTenantId: process.env.RRHH_BOT_TENANT_ID || process.env.MicrosoftAppTenantId || '80324945-885b-4f3e-99db-a1057b53db70'
 });
 
 const botFrameworkAuthentication = createBotFrameworkAuthenticationFromConfiguration(null, credentialsFactory);
