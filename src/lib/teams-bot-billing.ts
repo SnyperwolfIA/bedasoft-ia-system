@@ -180,6 +180,33 @@ export class BedasoftBillingTeamsBot extends ActivityHandler {
           }
         }
 
+          if (actionData.intent === 'LIST_CLIENTS') {
+             const cs = await prisma.client.findMany({ where: { userId: user.id }, orderBy: { name: 'asc' } });
+             if (cs.length === 0) {
+               friendlyText += '\n\nNo tienes clientes registrados todavía.';
+             } else {
+               friendlyText += '\n\n**Tus clientes en el sistema:**\n' + cs.map(c =>
+                 `• **${c.name}**${c.cif ? ` — CIF: ${c.cif}` : ''}${c.email ? ` — ${c.email}` : ''}`
+               ).join('\n');
+             }
+          }
+
+          if (actionData.intent === 'LIST_INVOICES') {
+             const ins = await prisma.invoice.findMany({
+               where: { userId: user.id },
+               include: { client: true },
+               orderBy: { createdAt: 'desc' },
+               take: 10
+             });
+             if (ins.length === 0) {
+               friendlyText += '\n\nNo hay facturas registradas en el sistema todavía.';
+             } else {
+               friendlyText += '\n\n**📋 Listado de facturas en el sistema:**\n' + ins.map(i =>
+                 `• **${i.numFactura}** — ${i.client?.name || 'Venta directa'}: **${i.total.toFixed(2)}€** _(${i.status})_${i.sharepointUrl ? ` — [Ver PDF en SharePoint](${i.sharepointUrl})` : ''}`
+               ).join('\n');
+             }
+          }
+
         await context.sendActivity(MessageFactory.text(friendlyText));
 
       } catch (err: any) {
