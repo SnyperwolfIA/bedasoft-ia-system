@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     try {
       const folderFiles = await getFolderFiles('Facturas');
       
-      if (folderFiles && folderFiles.length > 0) {
+      if (folderFiles && Array.isArray(folderFiles)) {
         console.log(`[Invoices API] Cargados ${folderFiles.length} archivos físicos desde la carpeta de SharePoint.`);
         
         // Cargamos de forma complementaria la lista de SharePoint 'Facturas' para enriquecer los metadatos
