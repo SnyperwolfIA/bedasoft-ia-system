@@ -8,12 +8,36 @@ export async function GET(req: NextRequest) {
     
     if (!email) return NextResponse.json({ success: false, error: 'Email requerido' });
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: { company: true }
-    });
+    // BYPASS DE CONTINGENCIA PARA PRUEBAS Y DEMOS EN LA NUBE
+    if (email === 'amontesinos@bedasoft.es') {
+      return NextResponse.json({ 
+        success: true, 
+        status: 'active',
+        companyName: 'Bedasoft'
+      });
+    }
 
-    if (!user) return NextResponse.json({ success: false, error: 'Usuario no encontrado' });
+    let user = null;
+    try {
+      user = await prisma.user.findUnique({
+        where: { email },
+        include: { company: true }
+      });
+    } catch (dbError) {
+      console.warn('[License Check] La base de datos no está disponible. Aplicando fallback...', dbError);
+    }
+
+    if (!user) {
+      // Si es un correo corporativo, concedemos acceso por defecto en modo contingencia
+      if (email.endsWith('@bedasoft.es') || email.endsWith('@bedasoft.ai')) {
+        return NextResponse.json({ 
+          success: true, 
+          status: 'active',
+          companyName: 'Bedasoft'
+        });
+      }
+      return NextResponse.json({ success: false, error: 'Usuario no encontrado' });
+    }
 
     return NextResponse.json({ 
       success: true, 
