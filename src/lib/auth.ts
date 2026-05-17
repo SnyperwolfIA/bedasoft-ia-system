@@ -59,8 +59,8 @@ export async function getSession(req: NextRequest): Promise<JWTPayload | null> {
 export function setSessionCookie(response: NextResponse, token: string): NextResponse {
   response.cookies.set('bedasoft_token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
     maxAge: 60 * 60 * 24 * 7, // 7 days
     path: '/',
   });
