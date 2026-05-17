@@ -6,7 +6,7 @@ import {
 } from 'botbuilder';
 import prisma from './prisma';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { initializeBedasoftStructure, uploadClientToSharePoint, uploadInvoiceToSharePoint, createListItem } from './microsoft-graph';
+import { initializeBedasoftStructure, uploadClientToSharePoint, uploadInvoiceToSharePoint, createListItem, getListItems } from './microsoft-graph';
 import { generateInvoicePDF } from './pdf-generator';
 
 const SYSTEM_PROMPT = `
@@ -181,29 +181,53 @@ export class BedasoftBillingTeamsBot extends ActivityHandler {
         }
 
           if (actionData.intent === 'LIST_CLIENTS') {
-             const cs = await prisma.client.findMany({ where: { userId: user.id }, orderBy: { name: 'asc' } });
-             if (cs.length === 0) {
-               friendlyText += '\n\nNo tienes clientes registrados todavía.';
-             } else {
-               friendlyText += '\n\n**Tus clientes en el sistema:**\n' + cs.map(c =>
-                 `• **${c.name}**${c.cif ? ` — CIF: ${c.cif}` : ''}${c.email ? ` — ${c.email}` : ''}`
-               ).join('\n');
+             try {
+                const listItems = await getListItems('Clientes');
+                if (listItems && listItems.length > 0) {
+                   friendlyText += '\n\n**📋 Clientes registrados en SharePoint:**\n' + listItems.map((item: any) =>
+                     `• **${item.fields.Title}**${item.fields.CIF ? ` — CIF: ${item.fields.CIF}` : ''}${item.fields.Email ? ` — ${item.fields.Email}` : ''}`
+                   ).join('\n');
+                } else {
+                   friendlyText += '\n\nNo tienes clientes registrados en la lista de SharePoint todavía.';
+                }
+             } catch (spErr) {
+                console.warn('[BillingBot] Falló la carga de clientes desde SharePoint, usando local:', spErr);
+                const cs = await prisma.client.findMany({ where: { userId: user.id }, orderBy: { name: 'asc' } });
+                if (cs.length === 0) {
+                  friendlyText += '\n\nNo tienes clientes registrados todavía.';
+                } else {
+                  friendlyText += '\n\n**Tus clientes en el sistema (local):**\n' + cs.map(c =>
+                    `• **${c.name}**${c.cif ? ` — CIF: ${c.cif}` : ''}${c.email ? ` — ${c.email}` : ''}`
+                  ).join('\n');
+                }
              }
           }
 
           if (actionData.intent === 'LIST_INVOICES') {
-             const ins = await prisma.invoice.findMany({
-               where: { userId: user.id },
-               include: { client: true },
-               orderBy: { createdAt: 'desc' },
-               take: 10
-             });
-             if (ins.length === 0) {
-               friendlyText += '\n\nNo hay facturas registradas en el sistema todavía.';
-             } else {
-               friendlyText += '\n\n**📋 Listado de facturas en el sistema:**\n' + ins.map(i =>
-                 `• **${i.numFactura}** — ${i.client?.name || 'Venta directa'}: **${i.total.toFixed(2)}€** _(${i.status})_${i.sharepointUrl ? ` — [Ver PDF en SharePoint](${i.sharepointUrl})` : ''}`
-               ).join('\n');
+             try {
+                const listItems = await getListItems('Facturas');
+                if (listItems && listItems.length > 0) {
+                   friendlyText += '\n\n**📋 Facturas registradas en SharePoint:**\n' + listItems.map((item: any) =>
+                     `• **${item.fields.Title}**${item.fields.Cliente ? ` — ${item.fields.Cliente}` : ''}: **${Number(item.fields.Total || 0).toFixed(2)}€** _(${item.fields.Estado || 'Emitida'})_${item.fields.SharePointUrl ? ` — [Ver PDF](${item.fields.SharePointUrl})` : ''}`
+                   ).join('\n');
+                } else {
+                   friendlyText += '\n\nNo hay facturas registradas en la lista de SharePoint todavía.';
+                }
+             } catch (spErr) {
+                console.warn('[BillingBot] Falló la carga de facturas desde SharePoint, usando local:', spErr);
+                const ins = await prisma.invoice.findMany({
+                  where: { userId: user.id },
+                  include: { client: true },
+                  orderBy: { createdAt: 'desc' },
+                  take: 10
+                });
+                if (ins.length === 0) {
+                  friendlyText += '\n\nNo hay facturas registradas en el sistema todavía.';
+                } else {
+                  friendlyText += '\n\n**📋 Listado de facturas (local):**\n' + ins.map(i =>
+                    `• **${i.numFactura}** — ${i.client?.name || 'Venta directa'}: **${i.total.toFixed(2)}€** _(${i.status})_${i.sharepointUrl ? ` — [Ver PDF in SharePoint](${i.sharepointUrl})` : ''}`
+                  ).join('\n');
+                }
              }
           }
 
