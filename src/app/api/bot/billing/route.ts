@@ -25,6 +25,28 @@ const bot = new BedasoftBillingTeamsBot();
 
 export async function POST(req: NextRequest) {
     try {
+        const fs = require('fs');
+        const path = require('path');
+        const cwd = process.cwd();
+        console.log(`[BOT-DEBUG] process.cwd(): ${cwd}`);
+        console.log(`[BOT-DEBUG] DATABASE_URL env: ${process.env.DATABASE_URL}`);
+        
+        const possiblePaths = [
+            path.join(cwd, 'prisma/dev.db'),
+            path.join(cwd, 'dev.db'),
+            '/var/task/prisma/dev.db',
+            './prisma/dev.db',
+            'prisma/dev.db'
+        ];
+        possiblePaths.forEach((p: string) => {
+            try {
+                const resolved = path.resolve(p);
+                console.log(`[BOT-DEBUG] path: ${p} -> resolved: ${resolved} -> exists: ${fs.existsSync(resolved)}`);
+            } catch (e) {
+                console.log(`[BOT-DEBUG] Error checking path ${p}:`, e);
+            }
+        });
+
         const body = await req.json();
         
         const mockRes: any = {

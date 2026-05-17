@@ -78,7 +78,7 @@ export class BedasoftBillingTeamsBot extends ActivityHandler {
       // 3. Procesar con Gemini
       try {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY?.replace(/"/g, '') || '');
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
         
         const chat = model.startChat({
           history: [
