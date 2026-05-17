@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
+/* ASTRA HUD CUSTOM STYLES */
+@theme {
+  --color-primary: #00ffff;
+  --color-accent: #ff00ff;
+}
+
+.astra-hud-border {
+  clip-path: polygon(
+    0% 20px, 20px 0%, 
+    calc(50% - 140px) 0%, calc(50% - 120px) 12px, 
+    calc(50% + 120px) 12px, calc(50% + 140px) 0%,
+    calc(100% - 20px) 0%, 100% 20px,
+    100% calc(100% - 20px), calc(100% - 20px) 100%,
+    20px 100%, 0% calc(100% - 20px)
+  );
+}
+
+.astra-hud-glow {
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.15), inset 0 0 20px rgba(0, 255, 255, 0.05);
+}
+
+:root {
+  --bg-dark: #000000;
+  --bg-card: rgba(0, 0, 0, 0.7);
+  --primary: #00ffff;
+  --primary-glow: rgba(0, 255, 255, 0.5);
+  --accent: #ff00ff;
+  --accent-glow: rgba(255, 0, 255, 0.4);
+  --text-main: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.5);
+  --border: rgba(0, 255, 255, 0.2);
+  --glass: rgba(255, 255, 255, 0.02);
+  --header-bg: rgba(0, 0, 0, 0.85);
+  --footer-bg: rgba(0, 0, 0, 0.6);
+  --energy-line: linear-gradient(90deg, transparent, var(--primary), transparent);
+}

@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  cif       String?
+  status    String   @default("active") // "active" or "inactive"
+  licenseKey String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String?
+  emailVerified     Boolean   @default(false)
+  verificationToken String?   @unique
+  password          String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  activeModules     String    @default("") 
+  resetToken        String?   @unique
+  resetTokenExpiry  DateTime?
+
+  // Company Relation
+  companyId         String?
+  company           Company?  @relation(fields: [companyId], references: [id])
+
+  // Jira Integration (User specific)
+  jiraUrl           String?
+  jiraEmail         String?
+  jiraToken         String?
+  jiraRole          String?   // "admin" o "user"
+
+  // Relations
+  clients   Client[]
+  invoices  Invoice[]
+  messages  ChatMessage[]
+}
+
+model SuperAdmin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  role      String   // "user" o "ai"
+  text      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Client {
+  id         String   @id @default(cuid())
+  userId     String
+  name       String
+  cif        String?
+  address    String?
+  postalCode String?
+  city       String?
+  email      String?
+  phone      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  sharepointUrl String?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoices Invoice[]
+}
+
+model Invoice {
+  id         String   @id @default(cuid())
+  userId     String
+  clientId   String?
+  numFactura String   @unique
+  numPedido  String?
+  total      Float    @default(0)
+  currency   String   @default("EUR")
+  issueDate  DateTime @default(now())
+  status     String   @default("emitida") 
+  sharepointUrl String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client Client? @relation(fields: [clientId], references: [id])
+  lines  InvoiceLine[]
+}
+
+model InvoiceLine {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  description String
+  quantity    Float   @default(1)
+  unitPrice   Float   @default(0)
+  totalPrice  Float   @default(0)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model GlobalAPI {
+  id        String   @id @default(cuid())
+  name      String   // e.g., "Jira Bedasoft", "OpenAI Principal"
+  service   String   // e.g., "jira", "openai", "google"
+  url       String?
+  email     String?
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
