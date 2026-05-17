@@ -30,21 +30,17 @@ export async function GET(req: NextRequest) {
           console.warn('[Invoices API] No se pudo cruzar con la lista de SharePoint:', listErr);
         }
 
-        // Crear mapa indexado por Title para rápido acceso
-        const listItemsMap = new Map<string, any>();
-        listItems.forEach(item => {
-          if (item.fields?.Title) {
-            listItemsMap.set(item.fields.Title.toLowerCase().trim(), item);
-          }
-        });
-
         const mappedInvoices = folderFiles.map((file: any) => {
           // Extraemos el número de factura quitando la extensión (.pdf, .json, etc.)
           const numFactura = file.name.replace(/\.[^/.]+$/, "");
           const cleanNumFactura = numFactura.toLowerCase().trim();
           
-          // Buscamos si existe un registro correspondiente en la lista de SharePoint
-          const matchedItem = listItemsMap.get(cleanNumFactura);
+          // Buscamos de forma flexible (si el nombre del archivo contiene el Title de la lista o viceversa)
+          const matchedItem = listItems.find(item => {
+            if (!item.fields?.Title) return false;
+            const title = item.fields.Title.toLowerCase().trim();
+            return cleanNumFactura.includes(title) || title.includes(cleanNumFactura);
+          });
           
           return {
             id: file.id,
