@@ -140,7 +140,8 @@ export async function getListItems(listName: string) {
     
     try {
         const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer ${token}` },
+            cache: 'no-store'
         });
         
         if (!res.ok) {
@@ -192,7 +193,8 @@ export async function getFolderFiles(folderName: string) {
     
     try {
         const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/drive/root:/${folderName}:/children`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer ${token}` },
+            cache: 'no-store'
         });
         
         if (!res.ok) {
