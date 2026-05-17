@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { getListItems, createListItem } from '@/lib/microsoft-graph';
+import { getListItems, createListItem, getFolderFiles } from '@/lib/microsoft-graph';
 
 // GET /api/billing/invoices?userEmail=xxx&page=1&limit=5
 export async function GET(req: NextRequest) {
@@ -15,24 +15,52 @@ export async function GET(req: NextRequest) {
     const user = await prisma.user.findUnique({ where: { email: userEmail } });
     if (!user) return NextResponse.json({ success: false, error: 'Usuario no encontrado' });
 
-    // 1. Intentamos cargar desde la lista de SharePoint 'Facturas'
+    // 1. Intentamos cargar desde la carpeta de SharePoint 'Facturas' (Document Library)
     try {
-      const listItems = await getListItems('Facturas');
-      if (listItems && listItems.length > 0) {
-        console.log(`[Invoices API] Cargadas ${listItems.length} facturas en tiempo real desde SharePoint List.`);
+      const folderFiles = await getFolderFiles('Facturas');
+      
+      if (folderFiles && folderFiles.length > 0) {
+        console.log(`[Invoices API] Cargados ${folderFiles.length} archivos físicos desde la carpeta de SharePoint.`);
         
-        const mappedInvoices = listItems.map((item: any) => ({
-          id: item.id,
-          numFactura: item.fields.Title, // 'Title' es el número de factura
-          total: Number(item.fields.Total || 0),
-          currency: item.fields.Moneda || 'EUR',
-          issueDate: item.fields.FechaEmision || item.createdDateTime || new Date().toISOString(),
-          status: item.fields.Estado?.toLowerCase() || 'emitida',
-          numPedido: item.fields.NumPedido || '',
-          sharepointUrl: item.fields.SharePointUrl || '',
-          client: item.fields.ClienteLookupId || item.fields.Cliente ? { name: item.fields.Cliente || 'Cliente Asociado' } : null,
-          lines: [] // Las líneas detalladas se leen desde el PDF físico
-        }));
+        // Cargamos de forma complementaria la lista de SharePoint 'Facturas' para enriquecer los metadatos
+        let listItems: any[] = [];
+        try {
+          listItems = await getListItems('Facturas');
+        } catch (listErr) {
+          console.warn('[Invoices API] No se pudo cruzar con la lista de SharePoint:', listErr);
+        }
+
+        // Crear mapa indexado por Title para rápido acceso
+        const listItemsMap = new Map<string, any>();
+        listItems.forEach(item => {
+          if (item.fields?.Title) {
+            listItemsMap.set(item.fields.Title.toLowerCase().trim(), item);
+          }
+        });
+
+        const mappedInvoices = folderFiles.map((file: any) => {
+          // Extraemos el número de factura quitando la extensión (.pdf, .json, etc.)
+          const numFactura = file.name.replace(/\.[^/.]+$/, "");
+          const cleanNumFactura = numFactura.toLowerCase().trim();
+          
+          // Buscamos si existe un registro correspondiente en la lista de SharePoint
+          const matchedItem = listItemsMap.get(cleanNumFactura);
+          
+          return {
+            id: file.id,
+            numFactura: numFactura,
+            total: matchedItem?.fields?.Total ? Number(matchedItem.fields.Total) : 0,
+            currency: matchedItem?.fields?.Moneda || 'EUR',
+            issueDate: file.createdDateTime || matchedItem?.fields?.FechaEmision || new Date().toISOString(),
+            status: matchedItem?.fields?.Estado?.toLowerCase() || 'emitida',
+            numPedido: matchedItem?.fields?.NumPedido || 'Archivo PDF',
+            sharepointUrl: file.webUrl || matchedItem?.fields?.SharePointUrl || '',
+            client: matchedItem?.fields?.ClienteLookupId || matchedItem?.fields?.Cliente 
+              ? { name: matchedItem.fields.Cliente || 'Cliente Asociado' } 
+              : { name: 'Venta Directa' },
+            lines: []
+          };
+        });
 
         // Ordenamos por fecha de emisión descendente
         const sortedInvoices = mappedInvoices.sort((a: any, b: any) => 
@@ -54,8 +82,8 @@ export async function GET(req: NextRequest) {
           }
         });
       }
-    } catch (spError) {
-      console.warn('[Invoices API] Falló la carga desde SharePoint, usando local:', spError);
+    } catch (spFolderError) {
+      console.warn('[Invoices API] Falló la carga desde la carpeta de SharePoint:', spFolderError);
     }
 
     // Fallback: Base de datos local

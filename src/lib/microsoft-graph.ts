@@ -183,3 +183,29 @@ export async function createListItem(listName: string, fields: any) {
     return data;
 }
 
+// Obtener archivos de una carpeta específica de la biblioteca de documentos
+export async function getFolderFiles(folderName: string) {
+    const token = await getGraphToken();
+    const siteId = await getSiteId();
+    
+    console.log(`[SharePoint Drive] Cargando archivos de la carpeta: ${folderName}`);
+    
+    try {
+        const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/drive/root:/${folderName}:/children`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!res.ok) {
+            const errData = await res.json();
+            console.error(`Error al obtener archivos de ${folderName}:`, JSON.stringify(errData, null, 2));
+            return [];
+        }
+        
+        const data = await res.json();
+        return data.value || [];
+    } catch (e) {
+        console.error(`Error de red cargando archivos de ${folderName}:`, e);
+        return [];
+    }
+}
+
