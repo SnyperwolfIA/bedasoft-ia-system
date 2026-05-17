@@ -118,7 +118,7 @@ export default function FacturacionPage() {
       (inv.client?.name || 'Venta Directa').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (inv.numPedido || '').toLowerCase().includes(searchTerm.toLowerCase());
     
-    const invDate = new Date(inv.createdAt).toISOString().split('T')[0];
+    const invDate = new Date(inv.createdAt || inv.issueDate || new Date()).toISOString().split('T')[0];
     const matchesDate = !dateFilter || invDate === dateFilter;
     
     return matchesSearch && matchesDate;
@@ -254,7 +254,7 @@ export default function FacturacionPage() {
                      </div>
                      <div className="invoice-col">
                         <span className="invoice-label" style={{ color: '#00ffff', opacity: 0.8 }}>FECHA_REGISTRO</span>
-                        <span className="invoice-value" style={{ color: 'white', fontSize: '0.85rem' }}>{new Date(inv.createdAt).toLocaleDateString()}</span>
+                        <span className="invoice-value" style={{ color: 'white', fontSize: '0.85rem' }}>{new Date(inv.createdAt || inv.issueDate || new Date()).toLocaleDateString()}</span>
                      </div>
                      <div className="invoice-col">
                         <span className="invoice-label" style={{ color: '#00ffff', opacity: 0.8 }}>CLIENTE</span>
