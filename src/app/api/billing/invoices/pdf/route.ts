@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { uploadInvoiceToSharePoint, initializeBedasoftStructure } from '@/lib/microsoft-graph';
+import { generateInvoicePDF } from '@/lib/pdf-generator';
 
 export async function GET(req: NextRequest) {
   try {
@@ -48,7 +49,7 @@ export async function GET(req: NextRequest) {
       // No bloqueamos la descarga del PDF si falla la subida, pero lo logueamos
     }
 
-    return new NextResponse(pdfBytes, {
+    return new NextResponse(pdfBytes as any, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

@@ -5,7 +5,7 @@ import {
   TeamsInfo
 } from 'botbuilder';
 import prisma from './prisma';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getAIChatCompletion } from './ai-service';
 import { getDriveService, searchAndDownloadFile } from './google';
 
 const SYSTEM_PROMPT = `
@@ -88,22 +88,10 @@ export class BedasoftRRHHTeamsBot extends ActivityHandler {
         }
       }
 
-      // 3. Procesar con Gemini
+      // 3. Procesar con Copilot / AI Service
       try {
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY?.replace(/"/g, '') || '');
-        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
-        
         const systemWithContext = SYSTEM_PROMPT.replace('{{DOCUMENT_CONTEXT}}', documentContext);
-
-        const chat = model.startChat({
-          history: [
-            { role: 'user', parts: [{ text: systemWithContext }] },
-            { role: 'model', parts: [{ text: 'Entendido. He procesado la documentación de RRHH disponible. Estoy listo para asistir al personal.' }] }
-          ]
-        });
-
-        const result = await chat.sendMessage(text);
-        const aiResponse = result.response.text();
+        const aiResponse = await getAIChatCompletion(systemWithContext, text, []);
 
         await context.sendActivity(MessageFactory.text(aiResponse));
 

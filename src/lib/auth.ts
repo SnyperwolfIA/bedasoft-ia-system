@@ -10,7 +10,8 @@ export interface JWTPayload {
   email: string;
   name: string | null;
   activeModules: string;
-  googleConnected: boolean;
+  googleConnected?: boolean;
+  companyName?: string;
 }
 
 /**

@@ -5,7 +5,7 @@ import {
   TeamsInfo
 } from 'botbuilder';
 import prisma from './prisma';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getAIChatCompletion } from './ai-service';
 import { getJiraProjects, getJiraIssues, createJiraIssue } from './jira';
 
 const SYSTEM_PROMPT = `
@@ -68,20 +68,9 @@ export class BedasoftJiraNeuralTeamsBot extends ActivityHandler {
         return await next();
       }
 
-      // 2. Procesar con Gemini
+      // 2. Procesar con Copilot / AI Service
       try {
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY?.replace(/"/g, '') || '');
-        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
-        
-        const chat = model.startChat({
-          history: [
-            { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
-            { role: 'model', parts: [{ text: 'Entendido. Enlace neural con la API de Jira establecido. ¿Qué proyectos o tickets gestionamos hoy?' }] }
-          ]
-        });
-
-        const result = await chat.sendMessage(text);
-        const aiResponse = result.response.text();
+        const aiResponse = await getAIChatCompletion(SYSTEM_PROMPT, text, []);
 
         // Parsear Acción
         let friendlyText = aiResponse;
@@ -92,53 +81,59 @@ export class BedasoftJiraNeuralTeamsBot extends ActivityHandler {
           const actionData = JSON.parse(actionMatch[1].trim());
 
           // EJECUTAR ACCIONES DE JIRA
-          if (actionData.intent === 'LIST_PROJECTS') {
-            try {
-              const projects = await getJiraProjects();
-              if (projects.length === 0) {
-                friendlyText += '\n\nNo he encontrado proyectos en tu instancia de Jira.';
-              } else {
-                friendlyText += '\n\n**🤖 Proyectos Jira activos:**\n' + projects.map((p: any) => 
-                  `• **${p.name}** [${p.key}]`
-                ).join('\n');
-              }
-            } catch (e: any) {
-              friendlyText += `\n\n❌ Error de conexión al listar proyectos de Jira: ${e.message}`;
-            }
-          }
-
-          if (actionData.intent === 'LIST_ISSUES') {
-            const { projectKey } = actionData.data;
-            if (!projectKey) {
-              friendlyText += '\n\n⚠️ Por favor, indícame la clave del proyecto (ej: SCRUM).';
+          if (actionData.intent !== 'NONE') {
+            if (!user.jiraUrl || !user.jiraEmail || !user.jiraToken) {
+              friendlyText += '\n\n⚠️ No he podido realizar la acción en Jira porque tu cuenta no tiene configuradas las credenciales de Jira en el portal Bedasoft IA.';
             } else {
-              try {
-                const data = await getJiraIssues(projectKey);
-                const issues = data.issues || [];
-                if (issues.length === 0) {
-                  friendlyText += `\n\nNo hay tickets abiertos en el proyecto **${projectKey}**.`;
-                } else {
-                  friendlyText += `\n\n**📋 Últimos tickets en ${projectKey}:**\n` + issues.slice(0, 5).map((i: any) => 
-                    `• **${i.key}**: ${i.fields.summary} _(${i.fields.status.name})_`
-                  ).join('\n');
+              if (actionData.intent === 'LIST_PROJECTS') {
+                try {
+                  const projects = await getJiraProjects(user.jiraUrl, user.jiraEmail, user.jiraToken);
+                  if (projects.length === 0) {
+                    friendlyText += '\n\nNo he encontrado proyectos en tu instancia de Jira.';
+                  } else {
+                    friendlyText += '\n\n**🤖 Proyectos Jira activos:**\n' + projects.map((p: any) => 
+                      `• **${p.name}** [${p.key}]`
+                    ).join('\n');
+                  }
+                } catch (e: any) {
+                  friendlyText += `\n\n❌ Error de conexión al listar proyectos de Jira: ${e.message}`;
                 }
-              } catch (e: any) {
-                friendlyText += `\n\n❌ Error al recuperar los tickets de ${projectKey}: ${e.message}`;
               }
-            }
-          }
 
-          if (actionData.intent === 'CREATE_ISSUE') {
-            const { projectKey, summary, description, issueType } = actionData.data;
-            if (!projectKey || !summary) {
-              friendlyText += '\n\n⚠️ Faltan parámetros requeridos (Proyecto y Título/Resumen) para completar el registro.';
-            } else {
-              try {
-                const issue = await createJiraIssue(projectKey, summary, description || '', issueType);
-                const browseUrl = `${process.env.JIRA_INSTANCE_URL || 'https://jira.atlassian.com'}/browse/${issue.key}`;
-                friendlyText += `\n\n✅ **TICKET CREADO CON ÉXITO**: [${issue.key}](${browseUrl})\n📌 **Resumen**: ${summary}`;
-              } catch (e: any) {
-                friendlyText += `\n\n❌ No he podido registrar el ticket en Jira: ${e.message}`;
+              if (actionData.intent === 'LIST_ISSUES') {
+                const { projectKey } = actionData.data;
+                if (!projectKey) {
+                  friendlyText += '\n\n⚠️ Por favor, indícame la clave del proyecto (ej: SCRUM).';
+                } else {
+                  try {
+                    const data = await getJiraIssues(user.jiraUrl, user.jiraEmail, user.jiraToken, projectKey);
+                    const issues = data.issues || [];
+                    if (issues.length === 0) {
+                      friendlyText += `\n\nNo hay tickets abiertos en el proyecto **${projectKey}**.`;
+                    } else {
+                      friendlyText += `\n\n**📋 Últimos tickets en ${projectKey}:**\n` + issues.slice(0, 5).map((i: any) => 
+                        `• **${i.key}**: ${i.fields.summary} _(${i.fields.status.name})_`
+                      ).join('\n');
+                    }
+                  } catch (e: any) {
+                    friendlyText += `\n\n❌ Error al recuperar los tickets de ${projectKey}: ${e.message}`;
+                  }
+                }
+              }
+
+              if (actionData.intent === 'CREATE_ISSUE') {
+                const { projectKey, summary, description, issueType } = actionData.data;
+                if (!projectKey || !summary) {
+                  friendlyText += '\n\n⚠️ Faltan parámetros requeridos (Proyecto y Título/Resumen) para completar el registro.';
+                } else {
+                  try {
+                    const issue = await createJiraIssue(user.jiraUrl, user.jiraEmail, user.jiraToken, projectKey, summary, description || '', issueType);
+                    const browseUrl = `${user.jiraUrl}/browse/${issue.key}`;
+                    friendlyText += `\n\n✅ **TICKET CREADO CON ÉXITO**: [${issue.key}](${browseUrl})\n📌 **Resumen**: ${summary}`;
+                  } catch (e: any) {
+                    friendlyText += `\n\n❌ No he podido registrar el ticket en Jira: ${e.message}`;
+                  }
+                }
               }
             }
           }

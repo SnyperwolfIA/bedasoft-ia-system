@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getAIChatCompletion } from '@/lib/ai-service';
 import { getDriveService, searchAndDownloadFile } from '@/lib/google';
 
 const SYSTEM_PROMPT = `
@@ -54,24 +54,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 3. Llamar a Gemini
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY?.replace(/"/g, '') || '');
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
-
+    // 3. Obtener respuesta del Copilot / AI Service
     const systemWithContext = SYSTEM_PROMPT.replace('{{DOCUMENT_CONTEXT}}', documentContext);
-
-    const chatHistory = [
-      { role: 'user' as const, parts: [{ text: systemWithContext }] },
-      { role: 'model' as const, parts: [{ text: 'Entendido. He procesado la documentación de RRHH disponible. Estoy listo para asistir al personal.' }] },
-      ...(history || []).slice(-10).map((m: any) => ({
-        role: (m.role === 'ai' ? 'model' : 'user') as 'user' | 'model',
-        parts: [{ text: m.text }]
-      }))
-    ];
-
-    const chat = model.startChat({ history: chatHistory });
-    const result = await chat.sendMessage(message);
-    const aiResponse = result.response.text();
+    const aiResponse = await getAIChatCompletion(systemWithContext, message, history || []);
 
     return NextResponse.json({ response: aiResponse });
 

@@ -5,7 +5,7 @@ import {
   TeamsInfo
 } from 'botbuilder';
 import prisma from './prisma';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getAIChatCompletion } from './ai-service';
 import { initializeBedasoftStructure, uploadClientToSharePoint, uploadInvoiceToSharePoint, createListItem } from './microsoft-graph';
 import { generateInvoicePDF } from './pdf-generator';
 
@@ -76,20 +76,10 @@ export class BedasoftTeamsBot extends ActivityHandler {
       const clients = await prisma.client.findMany({ where: { userId: user.id } });
       const clientList = clients.map(c => `- ${c.name}`).join('\n');
 
-      // 3. Procesar con Gemini
+      // 3. Procesar con Copilot / AI Service
       try {
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY?.replace(/"/g, '') || '');
-        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
-        
-        const chat = model.startChat({
-          history: [
-            { role: 'user', parts: [{ text: SYSTEM_PROMPT.replace('{{CLIENT_LIST}}', clientList) }] },
-            { role: 'model', parts: [{ text: 'Entendido. Estoy listo en Teams.' }] }
-          ]
-        });
-
-        const result = await chat.sendMessage(text);
-        const aiResponse = result.response.text();
+        const systemWithContext = SYSTEM_PROMPT.replace('{{CLIENT_LIST}}', clientList);
+        const aiResponse = await getAIChatCompletion(systemWithContext, text, []);
 
         // Parsear Acción
         let friendlyText = aiResponse;

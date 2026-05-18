@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getAIChatCompletion } from '@/lib/ai-service';
 import { getJiraProjects, getJiraIssues, createJiraIssue } from '@/lib/jira';
 
 const SYSTEM_PROMPT = `
@@ -30,22 +30,12 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.findUnique({ where: { email: userEmail } });
     if (!user) return NextResponse.json({ response: 'Sesión no válida.', action: null });
 
-    // 2. Llamar a Gemini
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY?.replace(/"/g, '') || '');
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+    if (!user.jiraUrl || !user.jiraEmail || !user.jiraToken) {
+      return NextResponse.json({ response: '⚠️ Configuración de Jira no detectada. Por favor, completa el enlace técnico.', action: null });
+    }
 
-    const chatHistory = [
-      { role: 'user' as const, parts: [{ text: SYSTEM_PROMPT }] },
-      { role: 'model' as const, parts: [{ text: 'Entendido. Enlace con Jira establecido. ¿Qué proyecto o ticket gestionamos hoy? [ACTION]{"intent":"GREETING","data":{}}[/ACTION]' }] },
-      ...(history || []).slice(-8).map((m: any) => ({
-        role: (m.role === 'ai' ? 'model' : 'user') as 'user' | 'model',
-        parts: [{ text: m.text.split('[ACTION]')[0] }]
-      }))
-    ];
-
-    const chat = model.startChat({ history: chatHistory });
-    const result = await chat.sendMessage(message);
-    const aiResponse = result.response.text();
+    // 2. Obtener respuesta del Copilot / AI Service
+    const aiResponse = await getAIChatCompletion(SYSTEM_PROMPT, message, history || []);
 
     // 3. Parsear la respuesta y ejecutar acciones
     let friendlyText = aiResponse;
@@ -66,7 +56,7 @@ export async function POST(req: NextRequest) {
     // Lógica de acciones JIRA
     if (actionData.intent === 'LIST_PROJECTS') {
       try {
-        const projects = await getJiraProjects();
+        const projects = await getJiraProjects(user.jiraUrl, user.jiraEmail, user.jiraToken);
         if (projects.length === 0) {
           friendlyText += '\n\nNo he encontrado proyectos en tu instancia de Jira.';
         } else {
@@ -86,7 +76,7 @@ export async function POST(req: NextRequest) {
         friendlyText += '\n\n⚠️ Por favor, indica la clave del proyecto (ej: SCRUM).';
       } else {
         try {
-          const data = await getJiraIssues(projectKey);
+          const data = await getJiraIssues(user.jiraUrl, user.jiraEmail, user.jiraToken, projectKey);
           const issues = data.issues || [];
           if (issues.length === 0) {
             friendlyText += `\n\nNo hay tickets abiertos en el proyecto **${projectKey}**.`;
@@ -108,8 +98,8 @@ export async function POST(req: NextRequest) {
         friendlyText += '\n\n⚠️ Faltan datos críticos para crear el ticket (Proyecto o Resumen).';
       } else {
         try {
-          const issue = await createJiraIssue(projectKey, summary, description || '', issueType);
-          friendlyText += `\n\n✅ **TICKET CREADO**: [${issue.key}](${process.env.JIRA_INSTANCE_URL}/browse/${issue.key}). El equipo ha sido notificado.`;
+          const issue = await createJiraIssue(user.jiraUrl, user.jiraEmail, user.jiraToken, projectKey, summary, description || '', issueType);
+          friendlyText += `\n\n✅ **TICKET CREADO**: [${issue.key}](${user.jiraUrl}/browse/${issue.key}). El equipo ha sido notificado.`;
           actionTriggered = 'ISSUE_CREATED';
         } catch (e: any) {
           friendlyText += `\n\n❌ Error al crear ticket en Jira: ${e.message}`;

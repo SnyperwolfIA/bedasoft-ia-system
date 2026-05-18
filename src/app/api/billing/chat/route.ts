@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getAIChatCompletion } from '@/lib/ai-service';
 import { initializeBedasoftStructure, uploadClientToSharePoint, uploadInvoiceToSharePoint } from '@/lib/microsoft-graph';
 import { generateInvoicePDF } from '@/lib/pdf-generator';
 
@@ -45,24 +45,9 @@ export async function POST(req: NextRequest) {
       ? clients.map(c => `- ${c.name}${c.cif ? ` (CIF: ${c.cif})` : ''}`).join('\n')
       : 'Ninguno registrado aún.';
 
-    // 3. Llamar a Gemini
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY?.replace(/"/g, '') || '');
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
-
+    // 3. Obtener respuesta del Copilot / AI Service
     const systemWithContext = SYSTEM_PROMPT.replace('{{CLIENT_LIST}}', clientList);
-
-    const chatHistory = [
-      { role: 'user' as const, parts: [{ text: systemWithContext }] },
-      { role: 'model' as const, parts: [{ text: 'Entendido. Soy el Asistente Neural de Facturación. Estoy listo. [ACTION]{"intent":"GREETING","data":{}}[/ACTION]' }] },
-      ...(history || []).slice(-8).map((m: any) => ({
-        role: (m.role === 'ai' ? 'model' : 'user') as 'user' | 'model',
-        parts: [{ text: m.text.split('[ACTION]')[0] }] // Solo el texto amigable en el historial
-      }))
-    ];
-
-    const chat = model.startChat({ history: chatHistory });
-    const result = await chat.sendMessage(message);
-    const aiResponse = result.response.text();
+    const aiResponse = await getAIChatCompletion(systemWithContext, message, history || []);
 
     // 4. Parsear la respuesta
     let friendlyText = aiResponse;

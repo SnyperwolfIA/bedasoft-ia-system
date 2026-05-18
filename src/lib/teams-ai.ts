@@ -1,6 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+import { getAIChatCompletion } from "./ai-service";
 
 const EXECUTIVE_PROMPT = `
 Eres el "Asistente Ejecutivo de Facturación Bedasoft", una IA de grado corporativo diseñada para la gestión financiera de alto nivel.
@@ -19,14 +17,8 @@ CAPACIDADES:
 `;
 
 export async function handleTeamsMessage(userMessage: string) {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    
-    const prompt = `${EXECUTIVE_PROMPT}\n\nMENSAJE DEL USUARIO: ${userMessage}\n\nRESPUESTA EJECUTIVA:`;
-    
     try {
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        return response.text();
+        return await getAIChatCompletion(EXECUTIVE_PROMPT, userMessage, []);
     } catch (error) {
         console.error("Error Teams AI:", error);
         return "Disculpe las molestias. Se ha producido una interrupción en el protocolo de comunicación neural. Por favor, contacte con el departamento técnico.";

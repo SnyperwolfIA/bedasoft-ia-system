@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getAIChatCompletion } from '@/lib/ai-service';
 import { 
   getJiraProjects, getJiraIssues, createJiraIssue, 
   getIssue, addComment, getTransitions, doTransition, assignIssue, searchUsers 
@@ -51,20 +51,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ response: '⚠️ Configuración de Jira no detectada. Por favor, completa el enlace técnico.' });
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY?.replace(/"/g, '') || '');
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
-
-    const chatHistory = [
-      { role: 'user' as const, parts: [{ text: SYSTEM_PROMPT(user.jiraRole || 'user') }] },
-      ...(history || []).slice(-15).map((m: any) => ({
-        role: (m.role === 'ai' ? 'model' : 'user') as 'user' | 'model',
-        parts: [{ text: m.text.split('[ACTION]')[0] }]
-      }))
-    ];
-
-    const chat = model.startChat({ history: chatHistory });
-    const result = await chat.sendMessage(message);
-    const aiResponse = result.response.text();
+    const aiResponse = await getAIChatCompletion(SYSTEM_PROMPT(user.jiraRole || 'user'), message, history || []);
 
     let friendlyText = aiResponse;
     let actionData: any = { intent: 'NONE', data: {} };
