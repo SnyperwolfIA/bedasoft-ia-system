@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
         lower === 'amontesinos@bedasoft.es' ||
         lower.endsWith('@bedasoft.es') ||
         lower.endsWith('@bedasoft.ai') ||
+        lower.endsWith('bedasoft.onmicrosoft.com') ||
+        (lower.includes('bedasoft') && lower.endsWith('.onmicrosoft.com')) ||
         lower.endsWith('@outlook.com') ||
         lower.endsWith('@outlook.es') ||
         lower.endsWith('@hotmail.com') ||
