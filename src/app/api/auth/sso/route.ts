@@ -5,7 +5,8 @@ import { signToken, setSessionCookie } from '@/lib/auth';
 export async function POST(request: NextRequest) {
   let requestEmail = '';
   try {
-    const { email } = await request.json();
+    const { email: rawEmail } = await request.json();
+    const email = rawEmail ? rawEmail.split('|').pop().trim().toLowerCase() : '';
     requestEmail = email;
 
     if (!email) {
