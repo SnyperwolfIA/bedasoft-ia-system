@@ -7,8 +7,9 @@ import { Cpu, Shield, Globe } from 'lucide-react';
 export default function GlobalFooter() {
   const pathname = usePathname();
   const isHome = pathname === '/';
+  const isIframe = typeof window !== 'undefined' && window.location.search.includes('iframe=true');
 
-  if (isHome) return null;
+  if (isHome || isIframe) return null;
 
   return (
     <footer className="w-full py-8 px-12 mt-auto relative overflow-hidden border-t border-white/5 bg-black/20 backdrop-blur-md">

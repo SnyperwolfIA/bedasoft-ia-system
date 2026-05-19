@@ -59,6 +59,34 @@ export default function VideoBackground() {
     return () => { if (interval) clearInterval(interval); };
   }, [targetTime]);
 
+  const isDashboard = pathname.startsWith('/dashboard');
+
+  if (isDashboard) {
+    return (
+      <div 
+        style={{ 
+          position: 'fixed', 
+          inset: 0, 
+          zIndex: 0, 
+          background: 'transparent',
+          pointerEvents: 'none'
+        }} 
+      >
+        <div 
+          className="dashboard-bg-gradient"
+          style={{ 
+            position: 'absolute', 
+            top: 0, 
+            left: 0, 
+            width: '100%', 
+            height: '100%', 
+            pointerEvents: 'none' 
+          }} 
+        />
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 0, background: '#000' }}>
       <video

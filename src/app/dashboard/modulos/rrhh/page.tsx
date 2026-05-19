@@ -4,12 +4,42 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
-  Users, Send, Cpu, Loader2, Bot, User, Sparkles, MessagesSquare
+  Users, Send, Cpu, Loader2, Bot, User, Sparkles, MessagesSquare, Sun, Moon
 } from 'lucide-react';
 
 export default function RRHHPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
+  useEffect(() => {
+    // Sync initial theme
+    const savedTheme = localStorage.getItem('bedasoft_theme') as 'light' | 'dark';
+    if (savedTheme) {
+      setTheme(savedTheme);
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-dashboard-theme');
+        document.body.classList.remove('dark-dashboard-theme', 'bg-black');
+      } else {
+        document.body.classList.add('dark-dashboard-theme');
+        document.body.classList.remove('light-dashboard-theme', 'bg-black');
+      }
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('bedasoft_theme', nextTheme);
+    
+    if (nextTheme === 'light') {
+      document.body.classList.add('light-dashboard-theme');
+      document.body.classList.remove('dark-dashboard-theme', 'bg-black');
+    } else {
+      document.body.classList.add('dark-dashboard-theme');
+      document.body.classList.remove('light-dashboard-theme', 'bg-black');
+    }
+  };
   const [chatMessages, setChatMessages] = useState<{role: string; text: string}[]>([
     { role: 'ai', text: 'SISTEMA RRHH ACTIVO. Hola, soy tu Asistente de Gestión de Talento. Tengo acceso a los documentos de convenio y vacaciones. ¿Qué consulta deseas realizar?' }
   ]);
@@ -75,6 +105,27 @@ export default function RRHHPage() {
 
   return (
     <main className="flex flex-col items-center h-[calc(100vh-120px)] text-white relative z-[100] overflow-hidden">
+      
+      {/* Floating Theme Switcher for IFrame users */}
+      <div className="absolute top-6 right-8 z-50 flex items-center gap-3">
+        <button
+          onClick={toggleTheme}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 transition-all text-white/60 hover:text-white backdrop-blur-md"
+          title={`Cambiar a Tema ${theme === 'dark' ? 'Claro' : 'Oscuro'}`}
+        >
+          {theme === 'dark' ? (
+            <>
+              <Sun className="w-3.5 h-3.5 text-yellow-400" />
+              <span className="text-[7.5px] tech-font uppercase tracking-widest">Tema Claro</span>
+            </>
+          ) : (
+            <>
+              <Moon className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="text-[7.5px] tech-font uppercase tracking-widest">Tema Oscuro</span>
+            </>
+          )}
+        </button>
+      </div>
       
       {/* Background Neural Overlay */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

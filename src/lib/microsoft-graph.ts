@@ -1,14 +1,19 @@
 import { ConfidentialClientApplication } from '@azure/msal-node';
 
-const msalConfig = {
-    auth: {
-        clientId: '1cbb0b14-cfd9-4e8d-a65e-f5e64c949bb0',
-        authority: 'https://login.microsoftonline.com/80324945-885b-4f3e-99db-a1057b53db70',
-        clientSecret: process.env.MICROSOFT_CLIENT_SECRET || '',
-    }
-};
+let pca: ConfidentialClientApplication | null = null;
 
-const pca = new ConfidentialClientApplication(msalConfig);
+function getPca() {
+    if (!pca) {
+        pca = new ConfidentialClientApplication({
+            auth: {
+                clientId: '1cbb0b14-cfd9-4e8d-a65e-f5e64c949bb0',
+                authority: 'https://login.microsoftonline.com/80324945-885b-4f3e-99db-a1057b53db70',
+                clientSecret: process.env.MICROSOFT_CLIENT_SECRET || '',
+            }
+        });
+    }
+    return pca;
+}
 
 export async function getGraphToken() {
     const tokenRequest = {
@@ -16,7 +21,7 @@ export async function getGraphToken() {
     };
 
     try {
-        const response = await pca.acquireTokenByClientCredential(tokenRequest);
+        const response = await getPca().acquireTokenByClientCredential(tokenRequest);
         return response?.accessToken;
     } catch (error) {
         console.error('Error al obtener token de Graph:', error);

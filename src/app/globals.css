@@ -811,3 +811,962 @@ footer.forced-visibility {
   padding-top: 4rem !important;
   background: rgba(0,0,0,0.6);
 }
+
+/* ==========================================
+   CLARO Y PROFESIONAL - CORPORATE LIGHT THEME
+   ========================================== */
+.dark-dashboard-theme {
+  background: #090d16 !important;
+  color: #f1f5f9 !important;
+  transition: background 0.5s ease, color 0.3s ease;
+}
+
+.dark-dashboard-theme .dashboard-bg-gradient {
+  background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 65%) !important;
+}
+
+/* Base resets inside dark business theme */
+.dark-dashboard-theme main {
+  color: #f1f5f9 !important;
+}
+
+.dark-dashboard-theme b {
+  color: #60a5fa !important;
+}
+
+/* Icons, text and headings override */
+.dark-dashboard-theme .text-primary,
+.dark-dashboard-theme svg.text-primary,
+.dark-dashboard-theme span.text-primary {
+  color: #3b82f6 !important;
+}
+
+.dark-dashboard-theme .text-accent,
+.dark-dashboard-theme svg.text-accent {
+  color: #6366f1 !important;
+}
+
+/* Header & Navigation Styles */
+.dark-dashboard-theme header {
+  background: transparent !important;
+}
+
+.dark-dashboard-theme header .astra-hud-border {
+  clip-path: none !important;
+  border-radius: 20px;
+}
+
+.dark-dashboard-theme header .astra-hud-glow {
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background: rgba(9, 13, 22, 0.95) !important;
+}
+
+.dark-dashboard-theme header .absolute.-inset-\[1px\] {
+  display: none !important;
+}
+
+/* Text elements inside Header */
+.dark-dashboard-theme header span,
+.dark-dashboard-theme header h2 {
+  color: #f1f5f9 !important;
+}
+
+.dark-dashboard-theme header .font-orbitron.text-primary\/40 {
+  color: #94a3b8 !important;
+  opacity: 0.8;
+}
+
+.dark-dashboard-theme header .tech-font {
+  color: #94a3b8 !important;
+}
+
+.dark-dashboard-theme header input {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.dark-dashboard-theme header input::placeholder {
+  color: #64748b !important;
+}
+
+.dark-dashboard-theme header .border-t {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(9, 13, 22, 0.6) !important;
+}
+
+.dark-dashboard-theme header button {
+  color: #94a3b8 !important;
+}
+
+.dark-dashboard-theme header button:hover {
+  color: #3b82f6 !important;
+}
+
+/* Global Header telemetry meters */
+.dark-dashboard-theme header .bg-white\/5 {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark-dashboard-theme header .bg-primary,
+.dark-dashboard-theme header .bg-accent {
+  background: #3b82f6 !important;
+}
+
+/* Glass Mask (Outer Content Box Wrapper) */
+.dark-dashboard-theme .glass-mask {
+  background: rgba(15, 23, 42, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 24px !important;
+  padding: 3rem !important;
+}
+
+/* Hub Module Selection Cards */
+.dark-dashboard-theme .hub-card {
+  background: rgba(15, 23, 42, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.dark-dashboard-theme .hub-card::after {
+  background: linear-gradient(135deg, transparent 50%, #3b82f6 50%) !important;
+  opacity: 0.1 !important;
+}
+
+.dark-dashboard-theme .hub-card:hover {
+  background: rgba(30, 41, 59, 0.55) !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+  transform: translateY(-8px) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark-dashboard-theme .hub-card:hover::after {
+  opacity: 0.4 !important;
+}
+
+.dark-dashboard-theme .hub-card-icon {
+  color: #3b82f6 !important;
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.15)) !important;
+}
+
+.dark-dashboard-theme .hub-card-title {
+  color: #f1f5f9 !important;
+}
+
+.dark-dashboard-theme .hub-card.opacity-20 {
+  background: rgba(15, 23, 42, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.02) !important;
+  color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-dashboard-theme .hub-card.opacity-20 .hub-card-icon {
+  color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-dashboard-theme .hub-card.opacity-20 .hub-card-title {
+  color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Context Badges on Module Cards */
+.dark-dashboard-theme .hub-card span {
+  color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.08) !important;
+  border: 1px solid rgba(59, 130, 246, 0.15) !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+}
+
+/* Chat Interface Box inside modules */
+.dark-dashboard-theme .chat-box {
+  background: rgba(9, 13, 22, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 24px !important;
+}
+
+.dark-dashboard-theme .chat-box .border-b {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark-dashboard-theme .chat-box span.tech-font {
+  color: #3b82f6 !important;
+}
+
+.dark-dashboard-theme .chat-messages-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* User & AI Messages */
+.dark-dashboard-theme .chat-message-ai,
+.dark-dashboard-theme .h-\[80\%\] .bg-white\/\[0\.03\] {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: #f1f5f9 !important;
+  border-left: 4px solid #3b82f6 !important;
+  border-radius: 16px !important;
+}
+
+.dark-dashboard-theme .chat-message-user,
+.dark-dashboard-theme .h-\[80\%\] .bg-primary\/10 {
+  background: rgba(59, 130, 246, 0.08) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  color: #f1f5f9 !important;
+  border-right: 4px solid #3b82f6 !important;
+  border-radius: 16px !important;
+}
+
+.dark-dashboard-theme .chat-message-ai b,
+.dark-dashboard-theme .h-\[80\%\] .bg-white\/\[0\.03\] b {
+  color: #60a5fa !important;
+}
+
+/* Chat Input Bar */
+.dark-dashboard-theme .chat-input {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.dark-dashboard-theme .chat-input::placeholder {
+  color: #64748b !important;
+}
+
+.dark-dashboard-theme .chat-send-btn {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.dark-dashboard-theme .chat-send-btn:hover {
+  background: #2563eb !important;
+}
+
+/* Analytics Container & Graph */
+.dark-dashboard-theme .analytics-box {
+  background: rgba(9, 13, 22, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 24px !important;
+}
+
+.dark-dashboard-theme .chart-bar-container {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark-dashboard-theme .chart-bar {
+  background: linear-gradient(to top, rgba(59, 130, 246, 0.1), #3b82f6) !important;
+  border-radius: 6px 6px 0 0 !important;
+}
+
+.dark-dashboard-theme .chart-month {
+  color: #94a3b8 !important;
+}
+
+.dark-dashboard-theme .chart-tooltip {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Invoice list registry section */
+.dark-dashboard-theme .invoice-list span.font-orbitron {
+  color: #f1f5f9 !important;
+}
+
+.dark-dashboard-theme .invoice-list input {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.dark-dashboard-theme .invoice-list input::placeholder {
+  color: #64748b !important;
+}
+
+/* Invoice list cards */
+.dark-dashboard-theme .invoice-item.forced-visibility {
+  background: rgba(15, 23, 42, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+.dark-dashboard-theme .invoice-item.forced-visibility:hover {
+  background: rgba(30, 41, 59, 0.55) !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+  transform: translateX(6px) !important;
+}
+
+.dark-dashboard-theme .invoice-label {
+  color: #3b82f6 !important;
+  font-weight: bold !important;
+  opacity: 1 !important;
+}
+
+.dark-dashboard-theme .invoice-value {
+  color: #f1f5f9 !important;
+}
+
+.dark-dashboard-theme .invoice-actions a {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+}
+
+.dark-dashboard-theme .invoice-actions a:hover {
+  background: #2563eb !important;
+}
+
+/* Pagination Bar */
+.dark-dashboard-theme div.pagination.forced-visibility {
+  background: rgba(15, 23, 42, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 12px !important;
+}
+
+.dark-dashboard-theme .pagination button.page-nav-btn {
+  color: #3b82f6 !important;
+}
+
+.dark-dashboard-theme .page-link {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  color: #94a3b8 !important;
+}
+
+.dark-dashboard-theme .page-link.active {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  border-color: #3b82f6 !important;
+}
+
+/* Full screen chat container inside modules */
+.dark-dashboard-theme .h-\[80\%\] {
+  background: rgba(15, 23, 42, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 32px !important;
+}
+
+/* Chat container header */
+.dark-dashboard-theme .h-\[80\%\] .border-b {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(9, 13, 22, 0.6) !important;
+}
+
+.dark-dashboard-theme .h-\[80\%\] h1 {
+  color: #f1f5f9 !important;
+}
+
+.dark-dashboard-theme .h-\[80\%\] .tech-font {
+  color: #94a3b8 !important;
+}
+
+/* Input area wrapper */
+.dark-dashboard-theme .border-t.border-white\/5 {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(9, 13, 22, 0.6) !important;
+}
+
+.dark-dashboard-theme .bg-black\/40.border.border-white\/10 {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.dark-dashboard-theme .bg-black\/40.border.border-white\/10 input {
+  color: #ffffff !important;
+}
+
+.dark-dashboard-theme .bg-black\/40.border.border-white\/10 input::placeholder {
+  color: #64748b !important;
+}
+
+/* Teams Integration Card */
+.dark-dashboard-theme .mt-6.p-4.bg-white\/\[0\.02\] {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark-dashboard-theme .mt-6.p-4.bg-white\/\[0\.02\] span.tech-font {
+  color: #94a3b8 !important;
+}
+
+.dark-dashboard-theme .mt-6.p-4.bg-white\/\[0\.02\] a.bg-\[\#4b53bc\] {
+  background: #4b53bc !important;
+  color: #ffffff !important;
+}
+
+.dark-dashboard-theme .mt-6.p-4.bg-white\/\[0\.02\] a.bg-\[\#4b53bc\] * {
+  color: #ffffff !important;
+}
+
+.dark-dashboard-theme .mt-6.p-4.bg-white\/\[0\.02\] p.tech-font {
+  color: #64748b !important;
+}
+
+/* Onboarding Form */
+.dark-dashboard-theme .max-w-md.bg-black\/80 {
+  background: rgba(15, 23, 42, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark-dashboard-theme .max-w-md.bg-black\/80 h2 {
+  color: #f1f5f9 !important;
+}
+
+.dark-dashboard-theme .max-w-md.bg-black\/80 p {
+  color: #94a3b8 !important;
+}
+
+.dark-dashboard-theme .max-w-md.bg-black\/80 label {
+  color: #94a3b8 !important;
+}
+
+.dark-dashboard-theme .max-w-md.bg-black\/80 input {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.dark-dashboard-theme .max-w-md.bg-black\/80 input::placeholder {
+  color: #64748b !important;
+}
+
+/* Universal text color corrections */
+.dark-dashboard-theme .text-white,
+.dark-dashboard-theme .text-white\/90,
+.dark-dashboard-theme .text-white\/70 {
+  color: #f1f5f9 !important;
+}
+
+.dark-dashboard-theme .text-white\/40,
+.dark-dashboard-theme .text-white\/30,
+.dark-dashboard-theme .text-white\/20 {
+  color: #94a3b8 !important;
+}
+
+/* Button & interactive states overrides */
+.dark-dashboard-theme button.bg-primary,
+.dark-dashboard-theme button.bg-primary * {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
+}
+
+.dark-dashboard-theme button.bg-primary:hover {
+  background: #2563eb !important;
+}
+
+.dark-dashboard-theme .h-\[80\%\] svg.text-primary {
+  color: #3b82f6 !important;
+}
+
+/* Footer Section inside Dark Theme */
+.dark-dashboard-theme footer {
+  background: rgba(9, 13, 22, 0.95) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: #94a3b8 !important;
+}
+
+.dark-dashboard-theme footer span {
+  color: #94a3b8 !important;
+}
+
+.dark-dashboard-theme footer .text-primary\/30 {
+  color: #3b82f6 !important;
+}
+
+.dark-dashboard-theme footer .font-orbitron {
+  color: #94a3b8 !important;
+  opacity: 0.8 !important;
+}
+
+.dark-dashboard-theme footer div.absolute.bottom-0 {
+  background: #3b82f6 !important;
+}
+
+/* ==========================================
+   TEMA CLARO PROFESIONAL - CORPORATE LIGHT
+   ========================================== */
+.light-dashboard-theme {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  transition: background 0.5s ease, color 0.3s ease;
+}
+
+.light-dashboard-theme .dashboard-bg-gradient {
+  background: radial-gradient(circle at 50% 50%, rgba(30, 64, 175, 0.05) 0%, transparent 65%) !important;
+}
+
+/* Base resets inside light theme */
+.light-dashboard-theme main {
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme b {
+  color: #1e40af !important;
+}
+
+/* Icons, text and headings override */
+.light-dashboard-theme .text-primary,
+.light-dashboard-theme svg.text-primary,
+.light-dashboard-theme span.text-primary {
+  color: #1e40af !important;
+}
+
+.light-dashboard-theme .text-accent,
+.light-dashboard-theme svg.text-accent {
+  color: #b02a87 !important;
+}
+
+/* Header & Navigation Styles */
+.light-dashboard-theme header {
+  background: transparent !important;
+}
+
+.light-dashboard-theme header .astra-hud-border {
+  clip-path: none !important;
+  border-radius: 20px;
+}
+
+.light-dashboard-theme header .astra-hud-glow {
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #f8fafc !important;
+}
+
+.light-dashboard-theme header .absolute.-inset-\[1px\] {
+  display: none !important;
+}
+
+/* Text elements inside Header */
+.light-dashboard-theme header span,
+.light-dashboard-theme header h2 {
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme header .font-orbitron.text-primary\/40 {
+  color: #475569 !important;
+  opacity: 0.8;
+}
+
+.light-dashboard-theme header .tech-font {
+  color: #475569 !important;
+}
+
+.light-dashboard-theme header input {
+  background: #e2e8f0 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme header input::placeholder {
+  color: #94a3b8 !important;
+}
+
+.light-dashboard-theme header .border-t {
+  border-color: #cbd5e1 !important;
+  background: #e2e8f0 !important;
+}
+
+.light-dashboard-theme header button {
+  color: #475569 !important;
+}
+
+.light-dashboard-theme header button:hover {
+  color: #1e40af !important;
+}
+
+/* Global Header telemetry meters */
+.light-dashboard-theme header .bg-white\/5 {
+  background: #cbd5e1 !important;
+}
+
+.light-dashboard-theme header .bg-primary,
+.light-dashboard-theme header .bg-accent {
+  background: #1e40af !important;
+}
+
+/* Glass Mask (Outer Content Box Wrapper) */
+.light-dashboard-theme .glass-mask {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid #cbd5e1 !important;
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.05) !important;
+  border-radius: 24px !important;
+  padding: 3rem !important;
+}
+
+/* Hub Module Selection Cards */
+.light-dashboard-theme .hub-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.01) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.light-dashboard-theme .hub-card::after {
+  background: linear-gradient(135deg, transparent 50%, #1e40af 50%) !important;
+  opacity: 0.05 !important;
+}
+
+.light-dashboard-theme .hub-card:hover {
+  background: #f8fafc !important;
+  border-color: #1e40af !important;
+  transform: translateY(-8px) !important;
+  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.04) !important;
+}
+
+.light-dashboard-theme .hub-card:hover::after {
+  opacity: 0.2 !important;
+}
+
+.light-dashboard-theme .hub-card-icon {
+  color: #1e40af !important;
+  filter: none !important;
+}
+
+.light-dashboard-theme .hub-card-title {
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .hub-card.opacity-20 {
+  background: #cbd5e1 !important;
+  border-color: #94a3b8 !important;
+  color: #64748b !important;
+}
+
+.light-dashboard-theme .hub-card.opacity-20 .hub-card-icon {
+  color: #64748b !important;
+}
+
+.light-dashboard-theme .hub-card.opacity-20 .hub-card-title {
+  color: #64748b !important;
+}
+
+/* Context Badges on Module Cards */
+.light-dashboard-theme .hub-card span {
+  color: #1e40af !important;
+  background: #dbeafe !important;
+  border: 1px solid #93c5fd !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+}
+
+/* Chat Interface Box inside modules */
+.light-dashboard-theme .chat-box {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02) !important;
+  border-radius: 24px !important;
+}
+
+.light-dashboard-theme .chat-box .border-b {
+  border-color: #e2e8f0 !important;
+}
+
+.light-dashboard-theme .chat-box span.tech-font {
+  color: #1e40af !important;
+}
+
+.light-dashboard-theme .chat-messages-area::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+
+/* User & AI Messages */
+.light-dashboard-theme .chat-message-ai,
+.light-dashboard-theme .h-\[80\%\] .bg-white\/\[0\.03\] {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  border-left: 4px solid #1e40af !important;
+  border-radius: 16px !important;
+}
+
+.light-dashboard-theme .chat-message-user,
+.light-dashboard-theme .h-\[80\%\] .bg-primary\/10 {
+  background: #dbeafe !important;
+  border: 1px solid #93c5fd !important;
+  color: #1e3a8a !important;
+  border-right: 4px solid #2563eb !important;
+  border-radius: 16px !important;
+}
+
+.light-dashboard-theme .chat-message-ai b,
+.light-dashboard-theme .h-\[80\%\] .bg-white\/\[0\.03\] b {
+  color: #1e3a8a !important;
+}
+
+/* Chat Input Bar */
+.light-dashboard-theme .chat-input {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .chat-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+.light-dashboard-theme .chat-send-btn {
+  background: #1e40af !important;
+  color: #ffffff !important;
+}
+
+.light-dashboard-theme .chat-send-btn:hover {
+  background: #1d4ed8 !important;
+}
+
+/* Analytics Container & Graph */
+.light-dashboard-theme .analytics-box {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02) !important;
+  border-radius: 24px !important;
+}
+
+.light-dashboard-theme .chart-bar-container {
+  border-color: #cbd5e1 !important;
+}
+
+.light-dashboard-theme .chart-bar {
+  background: linear-gradient(to top, #dbeafe, #1e40af) !important;
+  border-radius: 6px 6px 0 0 !important;
+}
+
+.light-dashboard-theme .chart-month {
+  color: #475569 !important;
+}
+
+.light-dashboard-theme .chart-tooltip {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* Invoice list registry section */
+.light-dashboard-theme .invoice-list span.font-orbitron {
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .invoice-list input {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .invoice-list input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Invoice list cards */
+.light-dashboard-theme .invoice-item.forced-visibility {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.01) !important;
+  border-radius: 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+.light-dashboard-theme .invoice-item.forced-visibility:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  transform: translateX(6px) !important;
+}
+
+.light-dashboard-theme .invoice-label {
+  color: #1e40af !important;
+  font-weight: bold !important;
+  opacity: 1 !important;
+}
+
+.light-dashboard-theme .invoice-value {
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .invoice-actions a {
+  background: #1e40af !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+}
+
+.light-dashboard-theme .invoice-actions a:hover {
+  background: #1d4ed8 !important;
+}
+
+/* Pagination Bar */
+.light-dashboard-theme div.pagination.forced-visibility {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.01) !important;
+  border-radius: 12px !important;
+}
+
+.light-dashboard-theme .pagination button.page-nav-btn {
+  color: #1e40af !important;
+}
+
+.light-dashboard-theme .page-link {
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+.light-dashboard-theme .page-link.active {
+  background: #1e40af !important;
+  color: #ffffff !important;
+  border-color: #1e40af !important;
+}
+
+/* Full screen chat container inside modules */
+.light-dashboard-theme .h-\[80\%\] {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.04) !important;
+  border-radius: 32px !important;
+}
+
+/* Chat container header */
+.light-dashboard-theme .h-\[80\%\] .border-b {
+  border-color: #cbd5e1 !important;
+  background: #f1f5f9 !important;
+}
+
+.light-dashboard-theme .h-\[80\%\] h1 {
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .h-\[80\%\] .tech-font {
+  color: #475569 !important;
+}
+
+/* Input area wrapper */
+.light-dashboard-theme .border-t.border-white\/5 {
+  border-color: #cbd5e1 !important;
+  background: #f1f5f9 !important;
+}
+
+.light-dashboard-theme .bg-black\/40.border.border-white\/10 {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .bg-black\/40.border.border-white\/10 input {
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .bg-black\/40.border.border-white\/10 input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Teams Integration Card */
+.light-dashboard-theme .mt-6.p-4.bg-white\/\[0\.02\] {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light-dashboard-theme .mt-6.p-4.bg-white\/\[0\.02\] span.tech-font {
+  color: #475569 !important;
+}
+
+.light-dashboard-theme .mt-6.p-4.bg-white\/\[0\.02\] a.bg-\[\#4b53bc\] {
+  background: #4b53bc !important;
+  color: #ffffff !important;
+}
+
+.light-dashboard-theme .mt-6.p-4.bg-white\/\[0\.02\] a.bg-\[\#4b53bc\] * {
+  color: #ffffff !important;
+}
+
+.light-dashboard-theme .mt-6.p-4.bg-white\/\[0\.02\] p.tech-font {
+  color: #64748b !important;
+}
+
+/* Onboarding Form */
+.light-dashboard-theme .max-w-md.bg-black\/80 {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.04) !important;
+}
+
+.light-dashboard-theme .max-w-md.bg-black\/80 h2 {
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .max-w-md.bg-black\/80 p {
+  color: #475569 !important;
+}
+
+.light-dashboard-theme .max-w-md.bg-black\/80 label {
+  color: #475569 !important;
+}
+
+.light-dashboard-theme .max-w-md.bg-black\/80 input {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .max-w-md.bg-black\/80 input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Universal text color corrections */
+.light-dashboard-theme .text-white,
+.light-dashboard-theme .text-white\/90,
+.light-dashboard-theme .text-white\/70 {
+  color: #0f172a !important;
+}
+
+.light-dashboard-theme .text-white\/40,
+.light-dashboard-theme .text-white\/30,
+.light-dashboard-theme .text-white\/20 {
+  color: #475569 !important;
+}
+
+/* Button & interactive states overrides */
+.light-dashboard-theme button.bg-primary,
+.light-dashboard-theme button.bg-primary * {
+  background: #1e40af !important;
+  color: #ffffff !important;
+}
+
+.light-dashboard-theme button.bg-primary:hover {
+  background: #1d4ed8 !important;
+}
+
+.light-dashboard-theme .h-\[80\%\] svg.text-primary {
+  color: #1e40af !important;
+}
+
+/* Footer Section inside Light Theme */
+.light-dashboard-theme footer {
+  background: #f8fafc !important;
+  border-top: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+.light-dashboard-theme footer span {
+  color: #475569 !important;
+}
+
+.light-dashboard-theme footer .text-primary\/30 {
+  color: #1e40af !important;
+}
+
+.light-dashboard-theme footer .font-orbitron {
+  color: #475569 !important;
+  opacity: 0.8 !important;
+}
+
+.light-dashboard-theme footer div.absolute.bottom-0 {
+  background: #1e40af !important;
+}

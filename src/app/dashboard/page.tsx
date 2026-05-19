@@ -4,13 +4,43 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
-  Receipt, LogOut, LayoutGrid, Plus, Users, Briefcase
+  Receipt, LogOut, LayoutGrid, Plus, Users, Briefcase, Sun, Moon
 } from 'lucide-react';
 
 export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [licenseStatus, setLicenseStatus] = useState<'active' | 'inactive' | 'loading'>('loading');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
+  useEffect(() => {
+    // Sync initial theme
+    const savedTheme = localStorage.getItem('bedasoft_theme') as 'light' | 'dark';
+    if (savedTheme) {
+      setTheme(savedTheme);
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-dashboard-theme');
+        document.body.classList.remove('dark-dashboard-theme', 'bg-black');
+      } else {
+        document.body.classList.add('dark-dashboard-theme');
+        document.body.classList.remove('light-dashboard-theme', 'bg-black');
+      }
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('bedasoft_theme', nextTheme);
+    
+    if (nextTheme === 'light') {
+      document.body.classList.add('light-dashboard-theme');
+      document.body.classList.remove('dark-dashboard-theme', 'bg-black');
+    } else {
+      document.body.classList.add('dark-dashboard-theme');
+      document.body.classList.remove('light-dashboard-theme', 'bg-black');
+    }
+  };
 
   useEffect(() => {
     const checkUser = () => {
@@ -116,6 +146,28 @@ export default function Dashboard() {
   return (
     <main className="flex flex-col min-h-screen text-white relative">
       <div className="flex-1 overflow-y-auto p-8 flex flex-col items-center justify-center relative z-10">
+        
+        {/* Floating Theme Switcher for IFrame users */}
+        <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 transition-all text-white/60 hover:text-white backdrop-blur-md"
+            title={`Cambiar a Tema ${theme === 'dark' ? 'Claro' : 'Oscuro'}`}
+          >
+            {theme === 'dark' ? (
+              <>
+                <Sun className="w-3.5 h-3.5 text-yellow-400" />
+                <span className="text-[7.5px] tech-font uppercase tracking-widest">Tema Claro</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-3.5 h-3.5 text-indigo-400" />
+                <span className="text-[7.5px] tech-font uppercase tracking-widest">Tema Oscuro</span>
+              </>
+            )}
+          </button>
+        </div>
+
         <div className="grid-hub">
           {visibleModules.map((module) => (
             <div key={module.id} className={`hub-card group ${module.badge ? 'border-primary/40 bg-primary/5' : ''}`} onClick={() => router.push(module.path)}>
