@@ -24,13 +24,28 @@ export async function POST(request: NextRequest) {
       console.warn('[SSO Auth] La base de datos no está disponible o está bloqueada. Aplicando protocolo de contingencia.', dbError);
     }
 
-    // Si la base de datos está caída o el usuario no existe, pero es el email administrador o de Bedasoft:
-    if (!user && (email === 'amontesinos@bedasoft.es' || email.endsWith('@bedasoft.es'))) {
-      console.log(`[SSO Auth] Generando sesión de administrador/demo para: ${email}`);
+    const isAuthorizedAdminDomain = (emailStr: string) => {
+      const lower = emailStr.toLowerCase();
+      return (
+        lower === 'amontesinos@bedasoft.es' ||
+        lower.endsWith('@bedasoft.es') ||
+        lower.endsWith('@bedasoft.ai') ||
+        lower.endsWith('@outlook.com') ||
+        lower.endsWith('@outlook.es') ||
+        lower.endsWith('@hotmail.com') ||
+        lower.endsWith('@hotmail.es') ||
+        lower.endsWith('@live.com') ||
+        lower.endsWith('@live.es')
+      );
+    };
+
+    // Si la base de datos está caída o el usuario no existe, pero es el email administrador o de Bedasoft/Outlook:
+    if (!user && isAuthorizedAdminDomain(email)) {
+      console.log(`[SSO Auth] Generando sesión de administrador para cuenta corporativa: ${email}`);
       user = {
         id: 'cl-admin-bedasoft-demo',
         email: email,
-        name: 'Ángel Montesinos',
+        name: email.split('@')[0].toUpperCase(),
         activeModules: 'facturacion,jira,rrhh',
         company: { name: 'Bedasoft' }
       };
@@ -76,12 +91,12 @@ export async function POST(request: NextRequest) {
     console.error('SSO Error General:', error);
     
     // Contingencia extrema si todo falla pero tenemos el email autorizado
-    if (requestEmail && (requestEmail === 'amontesinos@bedasoft.es' || requestEmail.endsWith('@bedasoft.es'))) {
+    if (requestEmail && isAuthorizedAdminDomain(requestEmail)) {
       console.log('[SSO Auth] Activando bypass de seguridad extremo para:', requestEmail);
       const userPayload = {
         userId: 'cl-admin-bedasoft-demo',
         email: requestEmail,
-        name: 'Ángel Montesinos',
+        name: requestEmail.split('@')[0].toUpperCase(),
         activeModules: 'facturacion,jira,rrhh',
         companyName: 'Bedasoft',
       };
