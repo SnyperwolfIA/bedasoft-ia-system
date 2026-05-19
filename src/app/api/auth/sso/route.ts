@@ -2,6 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { signToken, setSessionCookie } from '@/lib/auth';
 
+const isAuthorizedAdminDomain = (emailStr: string) => {
+  const lower = emailStr.toLowerCase();
+  return (
+    lower === 'amontesinos@bedasoft.es' ||
+    lower.endsWith('@bedasoft.es') ||
+    lower.endsWith('@bedasoft.ai') ||
+    lower.endsWith('bedasoft.onmicrosoft.com') ||
+    (lower.includes('bedasoft') && lower.endsWith('.onmicrosoft.com')) ||
+    lower.endsWith('@outlook.com') ||
+    lower.endsWith('@outlook.es') ||
+    lower.endsWith('@hotmail.com') ||
+    lower.endsWith('@hotmail.es') ||
+    lower.endsWith('@live.com') ||
+    lower.endsWith('@live.es')
+  );
+};
+
 export async function POST(request: NextRequest) {
   let requestEmail = '';
   try {
@@ -24,23 +41,6 @@ export async function POST(request: NextRequest) {
     } catch (dbError) {
       console.warn('[SSO Auth] La base de datos no está disponible o está bloqueada. Aplicando protocolo de contingencia.', dbError);
     }
-
-    const isAuthorizedAdminDomain = (emailStr: string) => {
-      const lower = emailStr.toLowerCase();
-      return (
-        lower === 'amontesinos@bedasoft.es' ||
-        lower.endsWith('@bedasoft.es') ||
-        lower.endsWith('@bedasoft.ai') ||
-        lower.endsWith('bedasoft.onmicrosoft.com') ||
-        (lower.includes('bedasoft') && lower.endsWith('.onmicrosoft.com')) ||
-        lower.endsWith('@outlook.com') ||
-        lower.endsWith('@outlook.es') ||
-        lower.endsWith('@hotmail.com') ||
-        lower.endsWith('@hotmail.es') ||
-        lower.endsWith('@live.com') ||
-        lower.endsWith('@live.es')
-      );
-    };
 
     // Si la base de datos está caída o el usuario no existe, pero es el email administrador o de Bedasoft/Outlook:
     if (!user && isAuthorizedAdminDomain(email)) {
