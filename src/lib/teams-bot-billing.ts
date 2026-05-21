@@ -21,12 +21,17 @@ REGLAS ABSOLUTAS:
    - CREATE_INVOICE: {clientName, numPedido, lines:[{description, quantity, unitPrice}]}
    - LIST_CLIENTS: {}
    - LIST_INVOICES: {}
+   - SEND_INVOICE_EMAIL: {invoiceNumber, recipientNameOrEmail}
+   - SCHEDULE_INVOICE_EMAIL: {invoiceNumber, recipientNameOrEmail, scheduleTime}
    - NONE: {}
 
 3. Para CREATE_INVOICE: extrae el número de pedido (numPedido). Si falta, PÍDELO.
 
-4. Responde en español profesional.
-5. Indica siempre que los cambios se sincronizan en SHAREPOINT.
+4. Para SEND_INVOICE_EMAIL: extrae el número de factura (invoiceNumber, ej: "FAC-T-001") y el destinatario (recipientNameOrEmail, ya sea un email directo o un nombre).
+5. Para SCHEDULE_INVOICE_EMAIL: extrae el número de factura, el destinatario y la hora programada en formato HH:MM (scheduleTime, ej: "10:00").
+
+6. Responde en español profesional.
+7. Indica siempre que los cambios se sincronizan en SHAREPOINT.
 `;
 
 export class BedasoftBillingTeamsBot extends ActivityHandler {
@@ -64,10 +69,25 @@ export class BedasoftBillingTeamsBot extends ActivityHandler {
         return await next();
       }
 
-      // 1. Verificar usuario en BD
+      // 1. Verificar usuario en BD e invocar el planificador de envíos de correo programados
+      try {
+        const { processScheduledEmails } = require('./email-scheduler');
+        await processScheduledEmails();
+      } catch (schErr) {
+        console.error('[BillingBot] Error al procesar correos programados:', schErr);
+      }
+
       const user = await prisma.user.findUnique({ where: { email: userEmail } });
       if (!user) {
         await context.sendActivity("No tienes una cuenta activa en el sistema Bedasoft IA. Por favor, regístrate en el portal primero.");
+        return await next();
+      }
+
+      // Verificar si el módulo Facturación está activo para el usuario
+      const activeModules = user.activeModules || '';
+      const modules = activeModules.split(',').map((m: string) => m.trim()).filter(Boolean);
+      if (!modules.includes('facturacion')) {
+        await context.sendActivity("Acceso Denegado: No tienes activo el módulo de Facturación. Solicita su activación a tu administrador en el panel de control.");
         return await next();
       }
 
@@ -174,7 +194,170 @@ export class BedasoftBillingTeamsBot extends ActivityHandler {
                friendlyText += `\n\n⚠️ No se ha podido crear la factura porque el cliente **${clientName}** no existe en el sistema. Regístralo primero con 'crear cliente'.`;
              }
           }
-        }
+
+          if (actionData.intent === 'SEND_INVOICE_EMAIL' || actionData.intent === 'SCHEDULE_INVOICE_EMAIL') {
+             const { invoiceNumber, recipientNameOrEmail, scheduleTime } = actionData.data;
+             const isSend = actionData.intent === 'SEND_INVOICE_EMAIL';
+             
+             // 1. Verificar módulo de mailing
+             const userModules = user.activeModules || '';
+             const userModulesArr = userModules.split(',').map((m: string) => m.trim()).filter(Boolean);
+             
+             if (!userModulesArr.includes('mailing')) {
+                friendlyText += `\n\n⚠️ **Acceso Denegado:** No tienes activo el módulo de Mailing. Solicita su activación a tu administrador en el panel de control.`;
+             } else {
+                // 2. Buscar factura
+                const invoice = await prisma.invoice.findFirst({
+                  where: {
+                    userId: user.id,
+                    numFactura: {
+                      contains: invoiceNumber
+                    }
+                  },
+                  include: { client: true, lines: true }
+                });
+
+                if (!invoice) {
+                   friendlyText += `\n\n⚠️ No he podido encontrar ninguna factura coincidente con **${invoiceNumber}** en tus registros.`;
+                } else {
+                   // 3. Resolver destinatario
+                   let recipientEmail: string | null = null;
+                   
+                   if (recipientNameOrEmail.includes('@')) {
+                      recipientEmail = recipientNameOrEmail.trim();
+                   } else {
+                      // Buscar en clientes del usuario
+                      const matchingClient = await prisma.client.findFirst({
+                        where: {
+                          userId: user.id,
+                          name: {
+                            contains: recipientNameOrEmail
+                          }
+                        }
+                      });
+                      if (matchingClient && matchingClient.email) {
+                         recipientEmail = matchingClient.email;
+                      } else {
+                         // Buscar en plantilla de empleados de SharePoint
+                         try {
+                            const { getGraphToken, getSiteId } = require('./microsoft-graph');
+                            const token = await getGraphToken();
+                            const siteId = await getSiteId();
+                            const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/drive/root:/RRHH/Vacaciones_Datos.json:/content`;
+                            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                            if (res.ok) {
+                              const data = await res.json();
+                              const worker = data.trabajadores.find((t: any) =>
+                                t.nombre.toLowerCase().includes(recipientNameOrEmail.toLowerCase())
+                              );
+                              if (worker && worker.email) {
+                                recipientEmail = worker.email;
+                              }
+                            }
+                         } catch (spErr) {
+                            console.warn('[BillingBot] Falló búsqueda en SharePoint:', spErr);
+                         }
+                      }
+                   }
+
+                   if (!recipientEmail) {
+                      friendlyText += `\n\n⚠️ No he podido resolver la dirección de correo electrónico para **"${recipientNameOrEmail}"**. Por favor, indícame su email directamente.`;
+                   } else {
+                      if (isSend) {
+                         // Realizar el envío inmediato
+                         try {
+                            const pdfBytes = await generateInvoicePDF(invoice);
+                            const { sendEmail } = require('./email');
+                            
+                            const formattedTotal = Number(invoice.total || 0).toFixed(2);
+                            const clientName = invoice.client?.name || 'Cliente';
+                            const issueDate = new Date(invoice.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+                            
+                            const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Factura Electrónica ${invoice.numFactura}</title>
+</head>
+<body style="margin:0;padding:0;background:#050508;font-family:sans-serif;color:#fff;">
+  <div style="background:#050508;padding:40px 20px;text-align:center;">
+    <div style="max-width:540px;margin:0 auto;background:linear-gradient(135deg,#0d0d1a,#0a0a15);border:1px solid rgba(0,242,254,0.15);border-radius:20px;padding:40px;text-align:left;">
+      <h2 style="color:#00f2fe;margin-top:0;font-size:22px;letter-spacing:1px;">FACTURA ELECTRÓNICA</h2>
+      <p style="color:rgba(255,255,255,0.6);font-size:14px;">Estimado cliente, le adjuntamos la factura correspondiente a sus servicios activos.</p>
+      
+      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:20px;margin:25px 0;">
+        <table width="100%" style="font-size:13px;line-height:2;">
+          <tr><td style="color:rgba(255,255,255,0.4);">Cliente:</td><td style="text-align:right;font-weight:bold;color:#fff;">${clientName}</td></tr>
+          <tr><td style="color:rgba(255,255,255,0.4);">Factura:</td><td style="text-align:right;color:#fff;">${invoice.numFactura}</td></tr>
+          <tr><td style="color:rgba(255,255,255,0.4);">Fecha:</td><td style="text-align:right;color:#fff;">${issueDate}</td></tr>
+          <tr><td style="color:#00f2fe;font-weight:bold;">Total:</td><td style="text-align:right;color:#00f2fe;font-weight:bold;font-size:16px;">${formattedTotal} EUR</td></tr>
+        </table>
+      </div>
+      
+      ${invoice.sharepointUrl ? `
+      <div style="text-align:center;margin:30px 0;">
+        <a href="${invoice.sharepointUrl}" style="display:inline-block;padding:14px 30px;background:linear-gradient(135deg,#00f2fe,#764ba2);color:#050508;font-weight:bold;text-decoration:none;border-radius:10px;text-transform:uppercase;font-size:11px;letter-spacing:1px;">Descargar Factura</a>
+      </div>
+      ` : ''}
+      
+      <p style="color:rgba(255,255,255,0.3);font-size:10px;margin-top:30px;text-align:center;">Bedasoft IA Cloud Billing System. La factura oficial se encuentra adjunta a este correo en formato PDF.</p>
+    </div>
+  </div>
+</body>
+</html>
+                            `;
+
+                            const sent = await sendEmail({
+                              to: recipientEmail,
+                              subject: `Factura Electrónica ${invoice.numFactura} – Bedasoft IA`,
+                              html: emailHtml,
+                              attachments: [
+                                {
+                                  filename: `Factura-${invoice.numFactura}.pdf`,
+                                  content: Buffer.from(pdfBytes),
+                                  contentType: 'application/pdf'
+                                }
+                              ]
+                            });
+
+                            if (sent) {
+                               friendlyText += `\n\n📧 **Factura enviada:** Se ha enviado la factura **${invoice.numFactura}** al correo **${recipientEmail}** con el archivo PDF adjunto.`;
+                            } else {
+                               friendlyText += `\n\n⚠️ No se pudo enviar el correo electrónico con la factura.`;
+                            }
+
+                         } catch (sendErr: any) {
+                            console.error('[BillingBot] Error enviando factura:', sendErr);
+                            friendlyText += `\n\n⚠️ Error al procesar el envío inmediato de la factura.`;
+                         }
+                      } else {
+                         // Realizar la programación del envío
+                         try {
+                            const { calculateNextRun } = require('./email-scheduler');
+                            const nextRun = calculateNextRun(scheduleTime);
+                            
+                            await prisma.scheduledEmail.create({
+                              data: {
+                                userId: user.id,
+                                invoiceNum: invoice.numFactura,
+                                recipient: recipientEmail,
+                                cronExpr: scheduleTime,
+                                nextRun
+                              }
+                            });
+
+                            friendlyText += `\n\n📅 **Planificación Registrada:** Se ha programado el envío automático de la factura **${invoice.numFactura}** a **${recipientEmail}** para todos los días a las **${scheduleTime}**.\n*Próxima ejecución:* ${nextRun.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} del ${nextRun.toLocaleDateString('es-ES')}`;
+
+                         } catch (schedErr: any) {
+                            console.error('[BillingBot] Error al registrar programación:', schedErr);
+                            friendlyText += `\n\n⚠️ Error al programar la factura en la base de datos.`;
+                         }
+                      }
+                   }
+                }
+             }
+          }
 
           if (actionData.intent === 'LIST_CLIENTS') {
              try {
@@ -226,6 +409,7 @@ export class BedasoftBillingTeamsBot extends ActivityHandler {
                 }
              }
           }
+        }
 
         await context.sendActivity(MessageFactory.text(friendlyText));
 

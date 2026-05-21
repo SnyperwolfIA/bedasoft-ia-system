@@ -4,6 +4,11 @@ interface EmailOptions {
   to: string;
   subject: string;
   html: string;
+  attachments?: Array<{
+    filename: string;
+    content: any;
+    contentType?: string;
+  }>;
 }
 
 const isEmailConfigured =
@@ -12,12 +17,15 @@ const isEmailConfigured =
   process.env.SMTP_PASS &&
   process.env.SMTP_PASS !== 'your-app-password-here';
 
-export async function sendEmail({ to, subject, html }: EmailOptions): Promise<boolean> {
+export async function sendEmail({ to, subject, html, attachments }: EmailOptions): Promise<boolean> {
   if (!isEmailConfigured) {
     // Development fallback: log to console
     console.log('\n========== [BEDASOFT EMAIL SIMULATION] ==========');
     console.log(`TO:      ${to}`);
     console.log(`SUBJECT: ${subject}`);
+    if (attachments && attachments.length > 0) {
+      console.log(`ATTACHMENTS: ${attachments.map(a => a.filename).join(', ')}`);
+    }
     console.log(`BODY:\n${html.replace(/<[^>]*>/g, '')}`);
     console.log('=================================================\n');
     return true;
@@ -39,6 +47,7 @@ export async function sendEmail({ to, subject, html }: EmailOptions): Promise<bo
       to,
       subject,
       html,
+      attachments,
     });
 
     console.log(`[BEDASOFT EMAIL] Sent to ${to}: ${subject}`);

@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
           console.warn('[Invoices API] No se pudo cargar localInvoices para enriquecimiento:', dbErr);
         }
 
-        const mappedInvoices = folderFiles.map((file: any) => {
+                const mappedInvoices = folderFiles.map((file: any) => {
           // Extraemos el número de factura quitando la extensión (.pdf, .json, etc.)
           const numFactura = file.name.replace(/\.[^/.]+$/, "");
           const cleanNumFactura = numFactura.toLowerCase().trim();
@@ -66,19 +66,23 @@ export async function GET(req: NextRequest) {
           return {
             id: file.id,
             numFactura: numFactura,
-            total: matchedItem?.fields?.Total ? Number(matchedItem.fields.Total) : 0,
-            currency: matchedItem?.fields?.Moneda || 'EUR',
-            issueDate: file.createdDateTime || matchedItem?.fields?.FechaEmision || new Date().toISOString(),
-            status: matchedItem?.fields?.Estado?.toLowerCase() || 'emitida',
-            numPedido: matchedItem?.fields?.NumPedido || 'Archivo PDF',
-            sharepointUrl: file.webUrl || matchedItem?.fields?.SharePointUrl || '',
+            total: matchedItem?.fields?.Total ? Number(matchedItem.fields.Total) : (localInv?.total || 0),
+            currency: matchedItem?.fields?.Moneda || localInv?.currency || 'EUR',
+            issueDate: localInv?.issueDate || localInv?.createdAt || file.createdDateTime || matchedItem?.fields?.FechaEmision || new Date().toISOString(),
+            status: matchedItem?.fields?.Estado?.toLowerCase() || localInv?.status || 'emitida',
+            numPedido: matchedItem?.fields?.NumPedido || localInv?.numPedido || 'Archivo PDF',
+            sharepointUrl: file.webUrl || matchedItem?.fields?.SharePointUrl || localInv?.sharepointUrl || '',
             client: { name: clientName },
-            lines: []
+            lines: [],
+            isUserInvoice: !!localInv
           };
         });
 
+        // Filtrar solo las facturas del usuario actual para evitar colisiones cruzadas en la demo
+        const filteredUserInvoices = mappedInvoices.filter((inv: any) => inv.isUserInvoice);
+
         // Ordenamos por fecha de emisión descendente
-        const sortedInvoices = mappedInvoices.sort((a: any, b: any) => 
+        const sortedInvoices = filteredUserInvoices.sort((a: any, b: any) => 
           new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime()
         );
 

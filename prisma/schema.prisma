@@ -52,6 +52,21 @@ model User {
   clients   Client[]
   invoices  Invoice[]
   messages  ChatMessage[]
+  scheduledEmails ScheduledEmail[]
+}
+
+model ScheduledEmail {
+  id         String   @id @default(cuid())
+  userId     String
+  invoiceNum String
+  recipient  String
+  cronExpr   String   // Textual or cron format (e.g., "todos los días a las 10:00")
+  nextRun    DateTime
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SuperAdmin {

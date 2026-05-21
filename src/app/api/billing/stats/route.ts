@@ -29,23 +29,42 @@ export async function GET(req: NextRequest) {
           console.warn('[Stats API] No se pudo obtener la lista de SharePoint:', listErr);
         }
 
+        // Cargamos todas las facturas locales del usuario para cruce de datos y filtrado
+        let localInvoices: any[] = [];
+        try {
+          localInvoices = await prisma.invoice.findMany({
+            where: { userId: user.id }
+          });
+        } catch (dbErr) {
+          console.warn('[Stats API] No se pudo cargar localInvoices:', dbErr);
+        }
+
         folderFiles.forEach((file: any) => {
           const numFactura = file.name.replace(/\.[^/.]+$/, "");
           const cleanNumFactura = numFactura.toLowerCase().trim();
           
-          // Cruce de datos flexible por subcadena
+          // Buscar correspondencia en local para verificar pertenencia al usuario
+          const localInv = localInvoices.find(li => {
+            const liNum = li.numFactura.toLowerCase().trim();
+            return cleanNumFactura.includes(liNum) || liNum.includes(cleanNumFactura);
+          });
+
+          // Si no pertenece a este usuario, no lo sumamos a sus estadísticas
+          if (!localInv) return;
+
+          // Cruce de datos flexible por subcadena con lista de SharePoint
           const matchedItem = listItems.find(item => {
             if (!item.fields?.Title) return false;
             const title = item.fields.Title.toLowerCase().trim();
             return cleanNumFactura.includes(title) || title.includes(cleanNumFactura);
           });
 
-          const issueDateStr = file.createdDateTime || matchedItem?.fields?.FechaEmision || new Date().toISOString();
+          const issueDateStr = localInv.issueDate || localInv.createdAt || file.createdDateTime || matchedItem?.fields?.FechaEmision || new Date().toISOString();
           const issueDate = new Date(issueDateStr);
           
           if (issueDate.getFullYear() === currentYear) {
             const month = issueDate.getMonth(); // 0-11
-            const total = matchedItem?.fields?.Total ? Number(matchedItem.fields.Total) : 0;
+            const total = matchedItem?.fields?.Total ? Number(matchedItem.fields.Total) : localInv.total;
             monthlyTotals[month] += total;
           }
         });

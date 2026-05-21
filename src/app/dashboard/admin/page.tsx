@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
-  Users, UserPlus, Settings, Shield, Key, Trash2, Save, X, Activity, Briefcase, Receipt, Cpu
+  Users, UserPlus, Settings, Shield, Key, Trash2, Save, X, Activity, Briefcase, Receipt, Cpu, Mail
 } from 'lucide-react';
 
 export default function AdminPanel() {
@@ -117,7 +117,8 @@ export default function AdminPanel() {
   const MODULES_AVAILABLE = [
     { id: 'facturacion', label: 'Facturación IA', icon: Receipt },
     { id: 'rrhh', label: 'RRHH IA', icon: Users },
-    { id: 'jiraneural', label: 'JiraNeural Sync', icon: Briefcase }
+    { id: 'jiraneural', label: 'JiraNeural Sync', icon: Briefcase },
+    { id: 'mailing', label: 'Mailing Agent', icon: Mail }
   ];
 
   if (!currentUser) return null;
