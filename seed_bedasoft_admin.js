@@ -22,7 +22,13 @@ const EMPLEADOS = [
   { nombre: "Marta Iglesias Peña",    email: "marta.iglesias@bedasoft.es",  departamento: "Producto",   cargo: "Scrum Master",              role: "user" },
   { nombre: "Álvaro Méndez Prieto",   email: "alvaro.mendez@bedasoft.es",   departamento: "TI",         cargo: "Data Scientist",            role: "user" },
   { nombre: "Angel Montesinos",       email: "amontesinos@bedasoft.es",     departamento: "Producto",   cargo: "Scrum Master",              role: "user" },
-  { nombre: "Angel MChuan",           email: "angel.mchuan@outlook.com",    departamento: "Producto",   cargo: "Scrum Master",              role: "user" }
+  { nombre: "Angel MChuan",           email: "angel.mchuan@outlook.com",    departamento: "Producto",   cargo: "Scrum Master",              role: "user" },
+  { nombre: "Administrador AI",       email: "admin@bedasoft.ai",           departamento: "TI",         cargo: "Administrator AI",          role: "admin" },
+  { nombre: "Bedasoft Admin M365",    email: "admin@bedasoft.onmicrosoft.com", departamento: "TI",      cargo: "M365 Global Admin",         role: "admin" },
+  { nombre: "Ángel Montesinos M365",   email: "amontesinos@bedasoft.onmicrosoft.com", departamento: "TI", cargo: "M365 Administrator",       role: "admin" },
+  { nombre: "Operador Test AI",       email: "test_ai@bedasoft.ai",         departamento: "TI",         cargo: "Operador Test AI",          role: "user" },
+  { nombre: "Angel MChuan (Gmail)",   email: "angel.mchuan@gmail.com",      departamento: "Producto",   cargo: "Scrum Master",              role: "user" },
+  { nombre: "Nuria García",           email: "nuriagc_92@hotmail.es",       departamento: "RRHH",       cargo: "Técnica de RRHH",           role: "admin" }
 ];
 
 async function main() {

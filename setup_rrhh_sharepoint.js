@@ -97,24 +97,24 @@ async function generateVacacionesPDF() {
   const red = rgb(0.93, 0.27, 0.27);
 
   // Fondo header
-  page.drawRectangle({ x: 0, y: height - 90, width: width, height: 90, color: darkBg });
-  page.drawRectangle({ x: 0, y: height - 92, width: width, height: 2, color: blue });
+  page.drawRectangle({ x: 0, y: height - 60, width: width, height: 60, color: darkBg });
+  page.drawRectangle({ x: 0, y: height - 62, width: width, height: 2, color: blue });
 
   // Título
-  page.drawText('BEDASOFT IA', { x: 40, y: height - 45, size: 22, font: fontBold, color: white });
+  page.drawText('BEDASOFT IA', { x: 40, y: height - 35, size: 16, font: fontBold, color: white });
   page.drawText('MODULO DE RECURSOS HUMANOS - GESTION DE VACACIONES 2026', {
-    x: 40, y: height - 70, size: 10, font: fontRegular, color: medGray
+    x: 40, y: height - 50, size: 8, font: fontRegular, color: medGray
   });
 
   // Fecha de generación (derecha)
   const hoy = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
-  page.drawText(`Generado: ${hoy}`, { x: width - 200, y: height - 55, size: 9, font: fontRegular, color: medGray });
-  page.drawText('Año fiscal: 2026', { x: width - 200, y: height - 70, size: 9, font: fontBold, color: white });
+  page.drawText(`Generado: ${hoy}`, { x: width - 200, y: height - 35, size: 8, font: fontRegular, color: medGray });
+  page.drawText('Año fiscal: 2026', { x: width - 200, y: height - 50, size: 8, font: fontBold, color: white });
 
   // Subtítulo marco legal
-  page.drawRectangle({ x: 0, y: height - 125, width: width, height: 33, color: lightGray });
+  page.drawRectangle({ x: 0, y: height - 85, width: width, height: 20, color: lightGray });
   page.drawText('Base legal: Estatuto de los Trabajadores (RDL 2/2015) - Art. 38: minimo 30 dias naturales (22 dias laborables) por ano trabajado', {
-    x: 40, y: height - 110, size: 8.5, font: fontOblique, color: rgb(0.3, 0.3, 0.3)
+    x: 40, y: height - 79, size: 7.5, font: fontOblique, color: rgb(0.3, 0.3, 0.3)
   });
 
   // ==================
@@ -142,32 +142,33 @@ async function generateVacacionesPDF() {
     { nombre: 'Fernando Ruiz Cano',     cargo: 'Contable Senior',         dpto: 'Finanzas',   antiguedad: '7 anos',  total: 22, disfrutados: 22, pendientes: 0,  estado: 'Completado' },
     { nombre: 'Marta Iglesias Pena',    cargo: 'Scrum Master',            dpto: 'Producto',   antiguedad: '5 anos',  total: 22, disfrutados: 11, pendientes: 11, estado: 'En plazo' },
     { nombre: 'Alvaro Mendez Prieto',   cargo: 'Data Scientist',          dpto: 'TI',         antiguedad: '3 anos',  total: 22, disfrutados: 0,  pendientes: 22, estado: 'Sin tomar' },
-    { nombre: 'Angel Montesinos',       cargo: 'Scrum Master',           dpto: 'Producto',   antiguedad: '5 anos',  total: 22, disfrutados: 12, pendientes: 10, estado: 'En plazo' },
-    { nombre: 'Angel MChuan',           cargo: 'Scrum Master',           dpto: 'Producto',   antiguedad: '5 anos',  total: 22, disfrutados: 12, pendientes: 10, estado: 'En plazo' },
+    { nombre: 'Angel Montesinos',       cargo: 'Scrum Master',            dpto: 'Producto',   antiguedad: '5 anos',  total: 22, disfrutados: 12, pendientes: 10, estado: 'En plazo' },
+    { nombre: 'Angel MChuan',           cargo: 'Scrum Master',            dpto: 'Producto',   antiguedad: '5 anos',  total: 22, disfrutados: 12, pendientes: 10, estado: 'En plazo' },
+    { nombre: 'Administrador AI',       cargo: 'Administrator AI',        dpto: 'TI',         antiguedad: '3 anos',  total: 22, disfrutados: 5,  pendientes: 17, estado: 'En plazo' },
+    { nombre: 'Bedasoft Admin M365',    cargo: 'M365 Global Admin',       dpto: 'TI',         antiguedad: '4 anos',  total: 22, disfrutados: 4,  pendientes: 18, estado: 'En plazo' },
+    { nombre: 'Angel Montesinos M365',  cargo: 'M365 Administrator',      dpto: 'TI',         antiguedad: '5 anos',  total: 22, disfrutados: 6,  pendientes: 16, estado: 'En plazo' },
+    { nombre: 'Operador Test AI',       cargo: 'Operador Test AI',        dpto: 'TI',         antiguedad: '2 anos',  total: 22, disfrutados: 12, pendientes: 10, estado: 'En plazo' },
+    { nombre: 'Angel MChuan (Gmail)',   cargo: 'Scrum Master',            dpto: 'Producto',   antiguedad: '5 anos',  total: 22, disfrutados: 12, pendientes: 10, estado: 'En plazo' },
+    { nombre: 'Nuria Garcia',           cargo: 'Tecnica de RRHH',         dpto: 'RRHH',       antiguedad: '4 anos',  total: 22, disfrutados: 12, pendientes: 10, estado: 'En plazo' }
   ];
 
   // Cabecera de tabla
-  let y = height - 155;
-  page.drawRectangle({ x: 35, y: y - 5, width: width - 70, height: 22, color: rgb(0.12, 0.15, 0.22) });
+  let y = height - 110;
+  page.drawRectangle({ x: 35, y: y - 4, width: width - 70, height: 16, color: rgb(0.12, 0.15, 0.22) });
   headers.forEach((h, i) => {
-    page.drawText(h.toUpperCase(), { x: colX[i] + 3, y: y + 4, size: 7.5, font: fontBold, color: white });
+    page.drawText(h.toUpperCase(), { x: colX[i] + 3, y: y + 1, size: 7, font: fontBold, color: white });
   });
 
-  y -= 20;
+  y -= 16;
 
   // Filas
   trabajadores.forEach((t, idx) => {
     const isEven = idx % 2 === 0;
-    page.drawRectangle({ x: 35, y: y - 4, width: width - 70, height: 19, color: isEven ? white : lightGray });
-
-    // Estado color badge
-    let estadoColor = green;
-    if (t.estado === 'Sin tomar') estadoColor = amber;
-    if (t.estado === 'Completado') estadoColor = blue;
+    page.drawRectangle({ x: 35, y: y - 3, width: width - 70, height: 13, color: isEven ? white : lightGray });
 
     const rowData = [
       t.nombre, t.cargo, t.dpto, t.antiguedad,
-      `${t.total} dias lab.`,
+      `${t.total} dias`,
       `${t.disfrutados} dias`,
       `${t.pendientes} dias`,
       ''
@@ -175,8 +176,8 @@ async function generateVacacionesPDF() {
 
     rowData.forEach((val, i) => {
       page.drawText(val, {
-        x: colX[i] + 3, y: y + 3,
-        size: 7.8, font: i === 0 ? fontBold : fontRegular,
+        x: colX[i] + 3, y: y,
+        size: 7, font: i === 0 ? fontBold : fontRegular,
         color: darkText,
         maxWidth: colWidths[i] - 6
       });
@@ -184,51 +185,51 @@ async function generateVacacionesPDF() {
 
     // Badge estado
     const badgeColor = t.estado === 'Completado' ? blue : t.estado === 'Sin tomar' ? amber : green;
-    page.drawRectangle({ x: colX[7] + 3, y: y, width: 70, height: 14, color: badgeColor, opacity: 0.12 });
-    page.drawText(t.estado, { x: colX[7] + 6, y: y + 3, size: 7, font: fontBold, color: badgeColor });
+    page.drawRectangle({ x: colX[7] + 3, y: y - 1, width: 70, height: 10, color: badgeColor, opacity: 0.12 });
+    page.drawText(t.estado, { x: colX[7] + 6, y: y, size: 6, font: fontBold, color: badgeColor });
 
     // Separador
-    page.drawLine({ start: { x: 35, y: y - 4 }, end: { x: width - 35, y: y - 4 }, thickness: 0.3, color: medGray, opacity: 0.4 });
+    page.drawLine({ start: { x: 35, y: y - 3 }, end: { x: width - 35, y: y - 3 }, thickness: 0.3, color: medGray, opacity: 0.4 });
 
-    y -= 20;
+    y -= 14;
   });
 
   // ============
   // RESUMEN / FOOTER
   // ============
-  y -= 15;
-  page.drawRectangle({ x: 35, y: y - 10, width: width - 70, height: 2, color: blue, opacity: 0.4 });
-
-  y -= 25;
-  page.drawText('RESUMEN DEPARTAMENTAL 2026', { x: 40, y, size: 9, font: fontBold, color: darkText });
+  y -= 8;
+  page.drawRectangle({ x: 35, y: y, width: width - 70, height: 1.5, color: blue, opacity: 0.4 });
 
   y -= 18;
+  page.drawText('RESUMEN DEPARTAMENTAL 2026', { x: 40, y: y, size: 8, font: fontBold, color: darkText });
+
+  y -= 35;
   const resumen = [
-    { dpto: 'TI',          empleados: 5, diasPendientes: 69 },
-    { dpto: 'RRHH',        empleados: 2, diasPendientes: 26 },
+    { dpto: 'TI',          empleados: 9, diasPendientes: 130 },
+    { dpto: 'RRHH',        empleados: 3, diasPendientes: 36 },
     { dpto: 'Finanzas',    empleados: 2, diasPendientes: 17 },
     { dpto: 'Operac.',     empleados: 1, diasPendientes: 10 },
     { dpto: 'Ventas',      empleados: 2, diasPendientes: 13 },
-    { dpto: 'Producto',    empleados: 2, diasPendientes: 15 },
+    { dpto: 'Producto',    empleados: 5, diasPendientes: 45 },
     { dpto: 'Marketing',   empleados: 1, diasPendientes: 0  },
   ];
 
   let rx = 40;
   resumen.forEach(r => {
-    page.drawRectangle({ x: rx, y: y - 5, width: 98, height: 38, color: lightGray });
-    page.drawText(r.dpto, { x: rx + 5, y: y + 20, size: 8, font: fontBold, color: blue });
+    page.drawRectangle({ x: rx, y: y - 3, width: 98, height: 32, color: lightGray });
+    page.drawText(r.dpto, { x: rx + 5, y: y + 16, size: 8, font: fontBold, color: blue });
     const empLabel = r.empleados > 1 ? `${r.empleados} empleados` : `${r.empleados} empleado`;
-    page.drawText(empLabel, { x: rx + 5, y: y + 8, size: 7, font: fontRegular, color: darkText });
-    page.drawText(`Pendientes: ${r.diasPendientes}d`, { x: rx + 5, y: y - 2, size: 7, font: fontBold, color: r.diasPendientes > 30 ? amber : darkText });
+    page.drawText(empLabel, { x: rx + 5, y: y + 6, size: 7, font: fontRegular, color: darkText });
+    page.drawText(`Pendientes: ${r.diasPendientes}d`, { x: rx + 5, y: y - 4, size: 7, font: fontBold, color: r.diasPendientes > 30 ? amber : darkText });
     rx += 106;
   });
 
   // Footer legal
-  page.drawRectangle({ x: 0, y: 0, width: width, height: 30, color: darkBg });
+  page.drawRectangle({ x: 0, y: 0, width: width, height: 24, color: darkBg });
   page.drawText(
     'Art. 38 ET: El periodo de vacaciones anuales retribuidas, no sustituibles por compensacion economica, sera de 30 dias naturales (min. 22 laborables). ' +
     'Convenio Colectivo: Empresas de Consultoria y Tecnologia (BOE).',
-    { x: 40, y: 10, size: 6.5, font: fontOblique, color: medGray, maxWidth: width - 80 }
+    { x: 40, y: 8, size: 6, font: fontOblique, color: medGray, maxWidth: width - 80 }
   );
 
   const pdfBytes = await pdfDoc.save();
@@ -292,7 +293,13 @@ async function main() {
       { "nombre": "Marta Iglesias Peña",    "cargo": "Scrum Master",              "departamento": "Producto",    "añosAntiguedad": 5,  "diasLaborablesTotal": 22, "diasDisfrutados": 11, "diasPendientes": 11, "estado": "En plazo",   "periodosSolicitados": ["15/06/2026 - 27/06/2026", "17/08/2026 - 28/08/2026"], "email": "marta.iglesias@bedasoft.es" },
       { "nombre": "Álvaro Méndez Prieto",   "cargo": "Data Scientist",            "departamento": "TI",          "añosAntiguedad": 3,  "diasLaborablesTotal": 22, "diasDisfrutados": 0,  "diasPendientes": 22, "estado": "Sin tomar",  "periodosSolicitados": [], "email": "alvaro.mendez@bedasoft.es" },
       { "nombre": "Angel Montesinos",       "cargo": "Scrum Master",              "departamento": "Producto",    "añosAntiguedad": 5,  "diasLaborablesTotal": 22, "diasDisfrutados": 12, "diasPendientes": 10, "estado": "En plazo",   "periodosSolicitados": ["05/04/2026 - 15/04/2026"], "email": "amontesinos@bedasoft.es" },
-      { "nombre": "Angel MChuan",           "cargo": "Scrum Master",              "departamento": "Producto",    "añosAntiguedad": 5,  "diasLaborablesTotal": 22, "diasDisfrutados": 12, "diasPendientes": 10, "estado": "En plazo",   "periodosSolicitados": ["05/04/2026 - 15/04/2026"], "email": "angel.mchuan@outlook.com" }
+      { "nombre": "Angel MChuan",           "cargo": "Scrum Master",              "departamento": "Producto",    "añosAntiguedad": 5,  "diasLaborablesTotal": 22, "diasDisfrutados": 12, "diasPendientes": 10, "estado": "En plazo",   "periodosSolicitados": ["05/04/2026 - 15/04/2026"], "email": "angel.mchuan@outlook.com" },
+      { "nombre": "Administrador AI",       "cargo": "Administrator AI",          "departamento": "TI",          "añosAntiguedad": 3,  "diasLaborablesTotal": 22, "diasDisfrutados": 5,  "diasPendientes": 17, "estado": "En plazo",   "periodosSolicitados": ["02/05/2026 - 09/05/2026"], "email": "admin@bedasoft.ai" },
+      { "nombre": "Bedasoft Admin M365",    "cargo": "M365 Global Admin",         "departamento": "TI",          "añosAntiguedad": 4,  "diasLaborablesTotal": 22, "diasDisfrutados": 4,  "diasPendientes": 18, "estado": "En plazo",   "periodosSolicitados": ["10/05/2026 - 15/05/2026"], "email": "admin@bedasoft.onmicrosoft.com" },
+      { "nombre": "Angel Montesinos M365",  "cargo": "M365 Administrator",        "departamento": "TI",          "añosAntiguedad": 5,  "diasLaborablesTotal": 22, "diasDisfrutados": 6,  "diasPendientes": 16, "estado": "En plazo",   "periodosSolicitados": ["12/05/2026 - 20/05/2026"], "email": "amontesinos@bedasoft.onmicrosoft.com" },
+      { "nombre": "Operador Test AI",       "cargo": "Operador Test AI",          "departamento": "TI",          "añosAntiguedad": 2,  "diasLaborablesTotal": 22, "diasDisfrutados": 12, "diasPendientes": 10, "estado": "En plazo",   "periodosSolicitados": ["15/06/2026 - 25/06/2026"], "email": "test_ai@bedasoft.ai" },
+      { "nombre": "Angel MChuan (Gmail)",   "cargo": "Scrum Master",              "departamento": "Producto",    "añosAntiguedad": 5,  "diasLaborablesTotal": 22, "diasDisfrutados": 12, "diasPendientes": 10, "estado": "En plazo",   "periodosSolicitados": ["05/04/2026 - 15/04/2026"], "email": "angel.mchuan@gmail.com" },
+      { "nombre": "Nuria García",           "cargo": "Técnica de RRHH",           "departamento": "RRHH",        "añosAntiguedad": 4,  "diasLaborablesTotal": 22, "diasDisfrutados": 12, "diasPendientes": 10, "estado": "En plazo",   "periodosSolicitados": ["10/07/2026 - 20/07/2026"], "email": "nuriagc_92@hotmail.es" }
     ],
     "notasLegales": [
       "Los días de vacaciones son laborables (Art. 38 ET). Mínimo 22 días laborables (30 naturales).",
